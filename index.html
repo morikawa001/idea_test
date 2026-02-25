@@ -121,14 +121,6 @@
     background: #eaf4fb;
   }
   .radio-group input, .check-group input { margin-top: 2px; }
-  input[type="file"] {
-    border: 2px dashed #aed6f1;
-    padding: 12px;
-    border-radius: 6px;
-    background: #f7fbff;
-    cursor: pointer;
-    width: 100%;
-  }
   .btn-row {
     display: flex; gap: 12px;
     justify-content: center;
@@ -320,7 +312,7 @@
       </div>
     </div>
 
-        <!-- ブロック4 -->
+    <!-- ブロック4 -->
     <div class="block">
       <div class="block-title">💡 第4ブロック：あなたのアイデア <span class="badge">I：介入</span></div>
 
@@ -367,12 +359,13 @@
         <textarea id="q13" placeholder="数値や割合で書けると、より開発がイメージしやすくなります。"></textarea>
       </div>
 
+      <!-- ▼▼▼ Q14：ファイル選択を削除し、案内テキストのみ残す ▼▼▼ -->
       <div class="q-block">
         <label class="q-label">Q14. 参考になる写真・資料があればメールに添付してください（任意）</label>
-        <div class="q-hint">📎 現在の問題の様子、参考にしたい製品画像、手書きスケッチなど（JPG・PNG・PDF対応）</div>
-    　　<input type="file" id="q14" accept="image/*,.pdf" multiple>
-        <div id="filePreview" style="margin-top:10px; display:flex; flex-wrap:wrap; gap:8px;"></div>
+        <div class="q-hint">📎 現在の問題の様子、参考にしたい製品画像、手書きスケッチなど（JPG・PNG・PDF対応）をメール送信時に直接添付してください。</div>
       </div>
+      <!-- ▲▲▲ ここまで変更 ▲▲▲ -->
+
     </div>
 
     <!-- ボタン -->
@@ -402,11 +395,11 @@
   </div>
 </div>
 
-  <script>
+<script>
 // ============================================================
 //  ユーティリティ
 // ============================================================
-const MAIL_TO = 'ns.morizo@gmail.com'; // ← 受信メールアドレスを変更（ここに窓口になる部署のメールアドレスを記入する）
+const MAIL_TO = 'ns.morizo@gmail.com';
 
 function getVal(id)   { return (document.getElementById(id)||{value:''}).value.trim(); }
 function getRadio(nm) {
@@ -455,41 +448,12 @@ document.querySelectorAll('input[name="q11"]').forEach(el => {
 });
 
 // ============================================================
-//  画像プレビュー
-// ============================================================
-document.getElementById('q14').addEventListener('change', function() {
-  const preview = document.getElementById('filePreview');
-  preview.innerHTML = '';
-  [...this.files].forEach(file => {
-    if (file.type.startsWith('image/')) {
-      const reader = new FileReader();
-      reader.onload = e => {
-        const img = document.createElement('img');
-        img.src = e.target.result;
-        img.style.cssText = 'height:80px;border-radius:6px;border:1px solid #ccc;';
-        preview.appendChild(img);
-      };
-      reader.readAsDataURL(file);
-    } else {
-      const tag = document.createElement('span');
-      tag.textContent = `📎 ${file.name}`;
-      tag.style.cssText = 'font-size:0.82em;background:#eee;padding:4px 10px;border-radius:4px;';
-      preview.appendChild(tag);
-    }
-  });
-});
-
-// ============================================================
-//  フォームテキスト生成
+//  フォームテキスト生成 ※ファイル関連処理を削除
 // ============================================================
 function buildText() {
   const now = new Date().toLocaleString('ja-JP');
   const q6  = getChecks('q6').join(' / ') || '（未選択）';
   const q9  = getChecks('q9').join(' / ') || '（未選択）';
-  const files = document.getElementById('q14').files;
-  const fileNames = files.length > 0
-    ? [...files].map(f=>f.name).join(', ')
-    : '（添付なし）';
   return `
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 💡 院内アイデア＆お困りごと提案フォーム
@@ -522,7 +486,7 @@ Q11. カテゴリー ： ${getRadio('q11') || '（未選択）'}
 Q12. 主要評価項目    ： ${getRadio('q12') || '（未選択）'}
 Q13. 定量的な予測    ：
 ${getVal('q13') || '（未記入）'}
-Q14. 添付ファイル    ： ${fileNames}
+Q14. 添付ファイル    ： ※参考資料はこのメールに直接添付してください
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 `.trim();
@@ -576,7 +540,6 @@ function validate() {
 function showPreview() {
   if (!validate()) return;
   document.getElementById('previewText').textContent = buildText();
-  // PICOボックス
   const picoBox = document.getElementById('picoBox');
   document.getElementById('picoContent').innerHTML = buildPico();
   picoBox.style.display = 'block';
@@ -594,13 +557,12 @@ function sendMail() {
   const dept = getVal('q1')   || '不明';
   const name = getVal('q2')   || '匿名';
   const cat  = getRadio('q11')|| '未選択';
-  const o    = getRadio('q12')|| '未選択';
   const subject = encodeURIComponent(`【院内アイデア提案】${cat}｜${dept} ${name}`);
   const body    = encodeURIComponent(
     buildText() + '\n\n' +
     '--- 研究計画骨格（PICO）---\n' +
     buildPico().replace(/<[^>]+>/g, '') + '\n\n' +
-    '※添付ファイルがある場合は別途メールに添付してください。'
+    '※参考写真・資料がある場合はこのメールに直接添付してください。'
   );
   window.location.href = `mailto:${MAIL_TO}?subject=${subject}&body=${body}`;
 }
@@ -626,7 +588,6 @@ function downloadTxt() {
 function resetForm() {
   if (!confirm('⚠️ 入力内容をすべてクリアします。よろしいですか？')) return;
   document.getElementById('ideaForm').reset();
-  document.getElementById('filePreview').innerHTML = '';
   ['badge-device','badge-rpa','badge-existing','badge-manual'].forEach(id => {
     document.getElementById(id).style.display = 'none';
   });
