@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>院内アイデア＆お困りごと提案フォーム</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Hiragino Kaku Gothic ProN', 'Meiryo', sans-serif;
+    background: #f0f4f8;
+    color: #333;
+    padding: 20px;
+  }
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  .header {
+    background: linear-gradient(135deg, #1a5276, #2e86c1);
+    color: white;
+    padding: 24px 28px;
+    border-radius: 12px 12px 0 0;
+    text-align: center;
+  }
+  .header h1 { font-size: 1.5em; margin-bottom: 6px; }
+  .header p  { font-size: 0.88em; opacity: 0.88; }
+  .progress-bar-wrap {
+    background: #d6eaf8;
+    padding: 10px 28px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 0.85em;
+    color: #1a5276;
+  }
+  .progress-bar-bg {
+    flex: 1; height: 10px;
+    background: #aed6f1;
+    border-radius: 5px; overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%; width: 0%;
+    background: #2e86c1;
+    border-radius: 5px;
+    transition: width 0.3s;
+  }
+  .block {
+    background: white;
+    border-left: 5px solid #2e86c1;
+    margin-top: 18px;
+    border-radius: 0 8px 8px 0;
+    padding: 20px 24px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.07);
+  }
+  .block-title {
+    font-size: 1.0em;
+    font-weight: bold;
+    color: #1a5276;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #d6eaf8;
+  }
+  .block-title .badge {
+    display: inline-block;
+    font-size: 0.75em;
+    background: #2e86c1;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 10px;
+    margin-left: 8px;
+    vertical-align: middle;
+  }
+  .q-block { margin-bottom: 20px; }
+  .q-label {
+    font-size: 0.92em;
+    font-weight: bold;
+    margin-bottom: 6px;
+    display: block;
+    color: #2c3e50;
+  }
+  .q-label .req {
+    color: #e74c3c;
+    font-size: 0.85em;
+    margin-left: 4px;
+  }
+  .q-hint {
+    font-size: 0.80em;
+    color: #888;
+    margin-bottom: 6px;
+  }
+  select, input[type="text"], textarea {
+    width: 100%;
+    padding: 9px 12px;
+    border: 1px solid #bdc3c7;
+    border-radius: 6px;
+    font-size: 0.92em;
+    font-family: inherit;
+    background: #fdfefe;
+    transition: border 0.2s;
+  }
+  select:focus, input:focus, textarea:focus {
+    outline: none;
+    border-color: #2e86c1;
+    background: #eaf4fb;
+  }
+  textarea { resize: vertical; min-height: 70px; }
+  .radio-group, .check-group {
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  .radio-group label, .check-group label {
+    display: flex; align-items: flex-start; gap: 8px;
+    font-size: 0.90em;
+    cursor: pointer;
+    padding: 7px 12px;
+    border: 1px solid #d5d8dc;
+    border-radius: 6px;
+    transition: background 0.15s;
+  }
+  .radio-group label:hover, .check-group label:hover {
+    background: #eaf4fb;
+  }
+  .radio-group input, .check-group input { margin-top: 2px; }
+  input[type="file"] {
+    border: 2px dashed #aed6f1;
+    padding: 12px;
+    border-radius: 6px;
+    background: #f7fbff;
+    cursor: pointer;
+    width: 100%;
+  }
+  .btn-row {
+    display: flex; gap: 12px;
+    justify-content: center;
+    margin-top: 28px; margin-bottom: 10px;
+    flex-wrap: wrap;
+  }
+  button {
+    padding: 12px 28px;
+    border: none; border-radius: 8px;
+    font-size: 0.95em; font-weight: bold;
+    cursor: pointer;
+    font-family: inherit;
+    transition: opacity 0.2s;
+  }
+  button:hover { opacity: 0.85; }
+  .btn-submit { background: #1a5276; color: white; }
+  .btn-reset  { background: #aab7b8; color: white; }
+  .btn-preview { background: #148f77; color: white; }
+  /* モーダル */
+  .modal-overlay {
+    display: none; position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.55);
+    z-index: 1000;
+    align-items: center; justify-content: center;
+  }
+  .modal-overlay.active { display: flex; }
+  .modal {
+    background: white;
+    border-radius: 12px;
+    padding: 28px;
+    max-width: 640px; width: 92%;
+    max-height: 85vh;
+    overflow-y: auto;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+  }
+  .modal h2 { color: #1a5276; margin-bottom: 14px; font-size: 1.1em; }
+  .modal pre {
+    background: #f4f6f7;
+    padding: 14px; border-radius: 8px;
+    font-size: 0.82em;
+    white-space: pre-wrap;
+    line-height: 1.7;
+    font-family: 'Courier New', monospace;
+    border: 1px solid #d5d8dc;
+  }
+  .modal-btn-row { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+  .btn-mail   { background: #2e86c1; color: white; }
+  .btn-dl     { background: #148f77; color: white; }
+  .btn-close  { background: #aab7b8; color: white; }
+  /* カテゴリバッジ */
+  .category-badge {
+    display: none;
+    margin-top: 8px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.82em;
+    font-weight: bold;
+    color: white;
+  }
+  .cat-device   { background: #1a5276; }
+  .cat-rpa      { background: #7d3c98; }
+  .cat-existing { background: #d35400; }
+  .cat-manual   { background: #117a65; }
+  @media(max-width:600px){
+    .btn-row { flex-direction: column; }
+    button { width: 100%; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>💡 院内アイデア＆お困りごと提案フォーム</h1>
+    <p>現場の気づきを研究につなげます。3〜5分で入力できます。</p>
+  </div>
+  <div class="progress-bar-wrap">
+    <span id="progress-label">0 / 13 項目入力済み</span>
+    <div class="progress-bar-bg">
+      <div class="progress-bar-fill" id="progressFill"></div>
+    </div>
+  </div>
+
+  <form id="ideaForm" novalidate>
+
+    <!-- ブロック1 -->
+    <div class="block">
+      <div class="block-title">📋 第1ブロック：基本情報</div>
+
+      <div class="q-block">
+        <label class="q-label">Q1. 所属部署 <span class="req">★必須</span></label>
+        <select id="q1" required>
+          <option value="">-- 選択してください --</option>
+          <option>外科系病棟（呼吸器外科・消化器外科など）</option>
+          <option>内科系病棟</option>
+          <option>ICU / HCU</option>
+          <option>手術室</option>
+          <option>外来</option>
+          <option>リハビリテーション科</option>
+          <option>薬剤部</option>
+          <option>放射線科</option>
+          <option>臨床検査部</option>
+          <option>医療情報・システム部門</option>
+          <option>臨床研究支援センター</option>
+          <option>事務部門</option>
+          <option>その他</option>
+        </select>
+      </div>
+
+      <div class="q-block">
+        <label class="q-label">Q2. 氏名 <span class="req">★必須</span></label>
+        <input type="text" id="q2" placeholder="例：山田 太郎（匿名希望の場合は「匿名」と入力可）" required>
+      </div>
+
+      <div class="q-block">
+        <label class="q-label">Q3. 職種 <span class="req">★必須</span></label>
+        <div class="radio-group" id="q3">
+          <label><input type="radio" name="q3" value="医師"> 医師</label>
+          <label><input type="radio" name="q3" value="看護師"> 看護師</label>
+          <label><input type="radio" name="q3" value="薬剤師"> 薬剤師</label>
+          <label><input type="radio" name="q3" value="臨床工学技士"> 臨床工学技士</label>
+          <label><input type="radio" name="q3" value="理学療法士・作業療法士"> 理学療法士・作業療法士</label>
+          <label><input type="radio" name="q3" value="事務職"> 事務職</label>
+          <label><input type="radio" name="q3" value="その他"> その他</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- ブロック2 -->
+    <div class="block">
+      <div class="block-title">🔍 第2ブロック：現場の課題 <span class="badge">P：対象・背景</span></div>
+
+      <div class="q-block">
+        <label class="q-label">Q4. 誰が一番困っていますか？ <span class="req">★必須</span></label>
+        <div class="radio-group" id="q4">
+          <label><input type="radio" name="q4" value="患者さん"> 患者さん</label>
+          <label><input type="radio" name="q4" value="自分自身・自部署のスタッフ"> 自分自身・自部署のスタッフ</label>
+          <label><input type="radio" name="q4" value="他部署のスタッフ"> 他部署のスタッフ</label>
+          <label><input type="radio" name="q4" value="病院全体"> 病院全体</label>
+        </div>
+      </div>
+
+      <div class="q-block">
+        <label class="q-label">Q5. 困りごとの発生頻度は？ <span class="req">★必須</span></label>
+        <div class="radio-group" id="q5">
+          <label><input type="radio" name="q5" value="毎日複数回"> 毎日複数回</label>
+          <label><input type="radio" name="q5" value="毎日1回程度"> 毎日1回程度</label>
+          <label><input type="radio" name="q5" value="週に数回"> 週に数回</label>
+          <label><input type="radio" name="q5" value="月に数回"> 月に数回</label>
+          <label><input type="radio" name="q5" value="稀だが発生すると重大"> 稀だが発生すると重大（ハイリスク）</label>
+        </div>
+      </div>
+
+      <div class="q-block">
+        <label class="q-label">Q6. どのような悪影響（ペイン）が生じていますか？ <span class="req">★必須</span>（複数選択可）</label>
+        <div class="check-group" id="q6">
+          <label><input type="checkbox" name="q6" value="医療安全の低下（インシデントリスクなど）"> 医療安全の低下（インシデントリスクなど）</label>
+          <label><input type="checkbox" name="q6" value="業務時間の圧迫（残業・無駄な転記作業など）"> 業務時間の圧迫（残業・無駄な転記作業など）</label>
+          <label><input type="checkbox" name="q6" value="患者さんの苦痛・QOL低下（痛み、離床の遅れなど）"> 患者さんの苦痛・QOL低下（痛み、離床の遅れなど）</label>
+          <label><input type="checkbox" name="q6" value="スタッフの身体的・精神的負担"> スタッフの身体的・精神的負担</label>
+          <label><input type="checkbox" name="q6" value="物品やコストの無駄"> 物品やコストの無駄</label>
+        </div>
+      </div>
+
+      <div class="q-block">
+        <label class="q-label">Q7. 困っている具体的な場面を教えてください</label>
+        <div class="q-hint">💬 記入例：術後、患者さんが複数ルートを持ったまま歩行する際、チューブが引っかかりやすい</div>
+        <textarea id="q7" placeholder="できるだけ具体的に記載してください（いつ・どこで・誰が・何が起きる）"></textarea>
+      </div>
+    </div>
+
+    <!-- ブロック3 -->
+    <div class="block">
+      <div class="block-title">🔄 第3ブロック：現在の対応とその限界 <span class="badge">C：比較対照</span></div>
+
+      <div class="q-block">
+        <label class="q-label">Q8. 現在、現場ではどのように工夫して乗り切っていますか？</label>
+        <textarea id="q8" placeholder="例：チューブをまとめてテープで留めている、スタッフが常に付き添う など"></textarea>
+      </div>
+
+      <div class="q-block">
+        <label class="q-label">Q9. 今のやり方の「限界」は何ですか？（複数選択可）</label>
+        <div class="check-group" id="q9">
+          <label><input type="checkbox" name="q9" value="手作業が多くて時間がかかる"> 手作業が多くて時間がかかる</label>
+          <label><input type="checkbox" name="q9" value="人によってやり方や精度にばらつきが出る"> 人によってやり方や精度にばらつきが出る</label>
+          <label><input type="checkbox" name="q9" value="根本的な解決（安全確保など）になっていない"> 根本的な解決（安全確保など）になっていない</label>
+          <label><input type="checkbox" name="q9" value="消耗品費などのコストがかかる"> 消耗品費などのコストがかかる</label>
+          <label><input type="checkbox" name="q9" value="スタッフへの教育コストが高い"> スタッフへの教育コストが高い</label>
+        </div>
+      </div>
+    </div>
+
+        <!-- ブロック4 -->
+    <div class="block">
+      <div class="block-title">💡 第4ブロック：あなたのアイデア <span class="badge">I：介入</span></div>
+
+      <div class="q-block">
+        <label class="q-label">Q10. どのようなアイテム・システムがあれば解決すると思いますか？ <span class="req">★必須</span></label>
+        <textarea id="q10" rows="5" placeholder="アイデアを自由に記載してください。完成形でなくて大丈夫です。「こんなものがあれば…」という段階のアイデアでも歓迎します。" required></textarea>
+      </div>
+
+      <div class="q-block">
+        <label class="q-label">Q11. アイデアのカテゴリー（一番近いもの） <span class="req">★必須</span></label>
+        <div class="q-hint">⚡ 選択すると自動分類されます</div>
+        <div class="radio-group" id="q11">
+          <label><input type="radio" name="q11" value="医療機器・器具の新規開発や改良"> 🔧 医療機器・器具の新規開発や改良</label>
+          <label><input type="radio" name="q11" value="アプリ・RPAによる業務自動化・電子化"> 💻 アプリ・RPA（UiPathなど）による業務自動化・電子化</label>
+          <label><input type="radio" name="q11" value="既存製品の新しい使い方（転用・適応外使用など）"> ♻️ 既存製品の新しい使い方（転用・適応外使用など）</label>
+          <label><input type="radio" name="q11" value="運用ルールやマニュアルの変更"> 📄 運用ルールやマニュアルの変更</label>
+        </div>
+        <!-- 自動分類バッジ -->
+        <div class="category-badge cat-device"   id="badge-device">🔧 カテゴリ：医療機器開発 → 臨床工学技士・産学連携担当へ通知</div>
+        <div class="category-badge cat-rpa"       id="badge-rpa">💻 カテゴリ：RPA/業務改善 → 情報システム・研究支援センターへ通知</div>
+        <div class="category-badge cat-existing"  id="badge-existing">♻️ カテゴリ：既存品転用 → 各科担当・薬事確認担当へ通知</div>
+        <div class="category-badge cat-manual"    id="badge-manual">📄 カテゴリ：運用改善 → 看護部・各部門主任へ通知</div>
+      </div>
+    </div>
+
+    <!-- ブロック5 -->
+    <div class="block">
+      <div class="block-title">📊 第5ブロック：期待される効果 <span class="badge">O：アウトカム</span></div>
+
+      <div class="q-block">
+        <label class="q-label">Q12. このアイデアが実現すると、何が一番改善しますか？ <span class="req">★必須</span></label>
+        <div class="radio-group" id="q12">
+          <label><input type="radio" name="q12" value="インシデント件数の減少"> 🛡️ インシデント件数の減少（医療安全の向上）</label>
+          <label><input type="radio" name="q12" value="業務時間・記録時間の短縮"> ⏱️ 業務時間・記録時間の短縮</label>
+          <label><input type="radio" name="q12" value="患者さんの回復促進（早期離床・QOL向上など）"> 🏃 患者さんの回復促進（早期離床・QOL向上など）</label>
+          <label><input type="radio" name="q12" value="コスト削減（物品費・人件費など）"> 💴 コスト削減（物品費・人件費など）</label>
+          <label><input type="radio" name="q12" value="スタッフの負担軽減・満足度向上"> 😊 スタッフの負担軽減・満足度向上</label>
+        </div>
+      </div>
+
+      <div class="q-block">
+        <label class="q-label">Q13. どのくらい良くなりそうですか？（わかる範囲で）</label>
+        <div class="q-hint">💬 記入例：1日あたり1時間の業務削減 / インシデントが半減 / 術後離床が1日早まる など</div>
+        <textarea id="q13" placeholder="数値や割合で書けると、より研究計画に結びつけやすくなります。"></textarea>
+      </div>
+
+      <div class="q-block">
+        <label class="q-label">Q14. 参考になる写真・資料があれば添付してください（任意）</label>
+        <div class="q-hint">📎 現在の問題の様子、参考にしたい製品画像、手書きスケッチなど（JPG・PNG・PDF対応）</div>
+        <input type="file" id="q14" accept="image/*,.pdf" multiple>
+        <div id="filePreview" style="margin-top:10px; display:flex; flex-wrap:wrap; gap:8px;"></div>
+      </div>
+    </div>
+
+    <!-- ボタン -->
+    <div class="btn-row">
+      <button type="button" class="btn-preview" onclick="showPreview()">👁️ 内容を確認する</button>
+      <button type="button" class="btn-reset"  onclick="resetForm()">🔄 リセット</button>
+    </div>
+
+  </form><!-- /ideaForm -->
+</div><!-- /container -->
+
+<!-- プレビュー＆送信モーダル -->
+<div class="modal-overlay" id="previewModal">
+  <div class="modal">
+    <h2>📋 入力内容の確認</h2>
+    <p style="font-size:0.85em;color:#666;margin-bottom:12px;">以下の内容で提出します。送信方法を選んでください。</p>
+    <pre id="previewText"></pre>
+    <div id="picoBox" style="margin-top:14px; padding:12px; background:#eaf4fb; border-radius:8px; font-size:0.83em; line-height:1.8; border-left:4px solid #2e86c1; display:none;">
+      <strong>🔬 自動生成：研究計画骨格（PICO）</strong><br>
+      <span id="picoContent"></span>
+    </div>
+    <div class="modal-btn-row">
+      <button class="btn-mail" onclick="sendMail()">✉️ メールで送信</button>
+      <button class="btn-dl"   onclick="downloadTxt()">💾 TXTで保存</button>
+      <button class="btn-close" onclick="closeModal()">✖ 閉じる</button>
+    </div>
+  </div>
+</div>
+
+  <script>
+// ============================================================
+//  ユーティリティ
+// ============================================================
+const MAIL_TO = 'your-email@hospital.jp'; // ← 受信メールアドレスを変更
+
+function getVal(id)   { return (document.getElementById(id)||{value:''}).value.trim(); }
+function getRadio(nm) {
+  const el = document.querySelector(`input[name="${nm}"]:checked`);
+  return el ? el.value : '';
+}
+function getChecks(nm) {
+  return [...document.querySelectorAll(`input[name="${nm}"]:checked`)].map(e=>e.value);
+}
+
+// ============================================================
+//  プログレスバー
+// ============================================================
+function updateProgress() {
+  const items = [
+    getVal('q1'), getVal('q2'), getRadio('q3'), getRadio('q4'),
+    getRadio('q5'), getChecks('q6').length > 0 ? '1' : '',
+    getVal('q7'), getVal('q8'), getChecks('q9').length > 0 ? '1' : '',
+    getVal('q10'), getRadio('q11'), getRadio('q12'), getVal('q13')
+  ];
+  const filled = items.filter(v => v !== '').length;
+  document.getElementById('progress-label').textContent = `${filled} / 13 項目入力済み`;
+  document.getElementById('progressFill').style.width = `${Math.round(filled/13*100)}%`;
+}
+
+document.addEventListener('change', updateProgress);
+document.addEventListener('input',  updateProgress);
+
+// ============================================================
+//  Q11 自動分類バッジ
+// ============================================================
+document.querySelectorAll('input[name="q11"]').forEach(el => {
+  el.addEventListener('change', function() {
+    ['badge-device','badge-rpa','badge-existing','badge-manual'].forEach(id => {
+      document.getElementById(id).style.display = 'none';
+    });
+    const map = {
+      '医療機器・器具の新規開発や改良':       'badge-device',
+      'アプリ・RPAによる業務自動化・電子化':   'badge-rpa',
+      '既存製品の新しい使い方（転用・適応外使用など）': 'badge-existing',
+      '運用ルールやマニュアルの変更':          'badge-manual'
+    };
+    const badge = map[this.value];
+    if (badge) document.getElementById(badge).style.display = 'block';
+  });
+});
+
+// ============================================================
+//  画像プレビュー
+// ============================================================
+document.getElementById('q14').addEventListener('change', function() {
+  const preview = document.getElementById('filePreview');
+  preview.innerHTML = '';
+  [...this.files].forEach(file => {
+    if (file.type.startsWith('image/')) {
+      const reader = new FileReader();
+      reader.onload = e => {
+        const img = document.createElement('img');
+        img.src = e.target.result;
+        img.style.cssText = 'height:80px;border-radius:6px;border:1px solid #ccc;';
+        preview.appendChild(img);
+      };
+      reader.readAsDataURL(file);
+    } else {
+      const tag = document.createElement('span');
+      tag.textContent = `📎 ${file.name}`;
+      tag.style.cssText = 'font-size:0.82em;background:#eee;padding:4px 10px;border-radius:4px;';
+      preview.appendChild(tag);
+    }
+  });
+});
+
+// ============================================================
+//  フォームテキスト生成
+// ============================================================
+function buildText() {
+  const now = new Date().toLocaleString('ja-JP');
+  const q6  = getChecks('q6').join(' / ') || '（未選択）';
+  const q9  = getChecks('q9').join(' / ') || '（未選択）';
+  const files = document.getElementById('q14').files;
+  const fileNames = files.length > 0
+    ? [...files].map(f=>f.name).join(', ')
+    : '（添付なし）';
+  return `
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+💡 院内アイデア＆お困りごと提案フォーム
+送信日時：${now}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+【第1ブロック：基本情報】
+Q1. 所属部署    ： ${getVal('q1') || '（未入力）'}
+Q2. 氏名       ： ${getVal('q2') || '（未入力）'}
+Q3. 職種       ： ${getRadio('q3') || '（未選択）'}
+
+【第2ブロック：現場の課題 — P：対象・背景】
+Q4. 困っている対象  ： ${getRadio('q4') || '（未選択）'}
+Q5. 発生頻度       ： ${getRadio('q5') || '（未選択）'}
+Q6. 悪影響（ペイン） ： ${q6}
+Q7. 具体的な場面    ：
+${getVal('q7') || '（未記入）'}
+
+【第3ブロック：現在の対応 — C：比較対照】
+Q8. 現在の工夫  ：
+${getVal('q8') || '（未記入）'}
+Q9. 現状の限界  ： ${q9}
+
+【第4ブロック：アイデア — I：介入】
+Q10. アイデア   ：
+${getVal('q10') || '（未記入）'}
+Q11. カテゴリー ： ${getRadio('q11') || '（未選択）'}
+
+【第5ブロック：期待される効果 — O：アウトカム】
+Q12. 主要評価項目    ： ${getRadio('q12') || '（未選択）'}
+Q13. 定量的な予測    ：
+${getVal('q13') || '（未記入）'}
+Q14. 添付ファイル    ： ${fileNames}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+`.trim();
+}
+
+// ============================================================
+//  PICO骨格の自動生成
+// ============================================================
+function buildPico() {
+  const p  = getRadio('q4')  || '___';
+  const freq = getRadio('q5')|| '___';
+  const pain = getChecks('q6').join('・') || '___';
+  const i  = getVal('q10')   || '___（アイデア）';
+  const c  = getVal('q8')    || '___（現在の対応）';
+  const o  = getRadio('q12') || '___';
+  const q  = getVal('q13')   || '（定量値未記入）';
+  return `
+<b>P（対象・背景）：</b>${p}において、${pain}という問題が${freq}の頻度で発生している。<br>
+<b>C（比較対照）：</b>現在は「${c}」で対応しているが、根本的な解決には至っていない。<br>
+<b>I（介入）：</b>新たに「${i.substring(0,60)}…」を導入する。<br>
+<b>O（評価項目）：</b>${o}を主要評価項目とし、${q}の改善が得られるかを検証する。
+`.trim();
+}
+
+// ============================================================
+//  バリデーション
+// ============================================================
+function validate() {
+  const required = [
+    { val: getVal('q1'),      label: 'Q1 所属部署' },
+    { val: getVal('q2'),      label: 'Q2 氏名' },
+    { val: getRadio('q3'),    label: 'Q3 職種' },
+    { val: getRadio('q4'),    label: 'Q4 困っている対象' },
+    { val: getRadio('q5'),    label: 'Q5 発生頻度' },
+    { val: getChecks('q6').length > 0 ? '1' : '', label: 'Q6 悪影響（ペイン）' },
+    { val: getVal('q10'),     label: 'Q10 アイデア' },
+    { val: getRadio('q11'),   label: 'Q11 カテゴリー' },
+    { val: getRadio('q12'),   label: 'Q12 主要評価項目' },
+  ];
+  const missing = required.filter(r => !r.val).map(r => r.label);
+  if (missing.length > 0) {
+    alert('⚠️ 以下の必須項目が未入力です：\n\n' + missing.join('\n'));
+    return false;
+  }
+  return true;
+}
+
+// ============================================================
+//  プレビュー表示
+// ============================================================
+function showPreview() {
+  if (!validate()) return;
+  document.getElementById('previewText').textContent = buildText();
+  // PICOボックス
+  const picoBox = document.getElementById('picoBox');
+  document.getElementById('picoContent').innerHTML = buildPico();
+  picoBox.style.display = 'block';
+  document.getElementById('previewModal').classList.add('active');
+}
+
+function closeModal() {
+  document.getElementById('previewModal').classList.remove('active');
+}
+
+// ============================================================
+//  メール送信
+// ============================================================
+function sendMail() {
+  const dept = getVal('q1')   || '不明';
+  const name = getVal('q2')   || '匿名';
+  const cat  = getRadio('q11')|| '未選択';
+  const o    = getRadio('q12')|| '未選択';
+  const subject = encodeURIComponent(`【院内アイデア提案】${cat}｜${dept} ${name}`);
+  const body    = encodeURIComponent(
+    buildText() + '\n\n' +
+    '--- 研究計画骨格（PICO）---\n' +
+    buildPico().replace(/<[^>]+>/g, '') + '\n\n' +
+    '※添付ファイルがある場合は別途メールに添付してください。'
+  );
+  window.location.href = `mailto:${MAIL_TO}?subject=${subject}&body=${body}`;
+}
+
+// ============================================================
+//  TXTダウンロード
+// ============================================================
+function downloadTxt() {
+  const text = buildText() + '\n\n--- 研究計画骨格（PICO）---\n' + buildPico().replace(/<[^>]+>/g, '');
+  const now  = new Date();
+  const ts   = `${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}`;
+  const name = getVal('q2') || 'unknown';
+  const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+  const a    = document.createElement('a');
+  a.href     = URL.createObjectURL(blob);
+  a.download = `idea_${ts}_${name}.txt`;
+  a.click();
+}
+
+// ============================================================
+//  リセット
+// ============================================================
+function resetForm() {
+  if (!confirm('⚠️ 入力内容をすべてクリアします。よろしいですか？')) return;
+  document.getElementById('ideaForm').reset();
+  document.getElementById('filePreview').innerHTML = '';
+  ['badge-device','badge-rpa','badge-existing','badge-manual'].forEach(id => {
+    document.getElementById(id).style.display = 'none';
+  });
+  updateProgress();
+}
+
+// 初期プログレス
+updateProgress();
+</script>
+</body>
+</html>
