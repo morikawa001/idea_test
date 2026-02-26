@@ -214,6 +214,7 @@ textarea { resize: vertical; min-height: 80px; }
 .btn-next    { background: #4caf88; color: white; flex: 1; }
 .btn-preview { background: #2d7a5f; color: white; flex: 1; }
 .btn-reset   { background: #b2c5ba; color: white; }
+.btn-finish  { background: #2d7a5f; color: white; }
 button {
   padding: 12px 22px; border: none; border-radius: 8px;
   font-size: 0.95em; font-weight: bold; cursor: pointer;
@@ -333,11 +334,53 @@ button:active { transform: scale(0.97); }
 }
 .btn-just-close:hover { opacity: 0.75; }
 
+/* ===== 終了画面 ===== */
+.end-screen {
+  display: none;
+  background: white;
+  border-radius: 0 0 12px 12px;
+  padding: 56px 36px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  animation: fadeSlideIn 0.5s ease;
+}
+.end-screen.active { display: block; }
+.end-icon {
+  font-size: 4.5em;
+  margin-bottom: 20px;
+  animation: iconBounce 0.6s 0.2s cubic-bezier(0.175,0.885,0.32,1.275) both;
+}
+.end-title {
+  font-size: 1.55em; font-weight: bold;
+  color: #2d7a5f; margin-bottom: 16px;
+}
+.end-divider {
+  width: 60px; height: 3px;
+  background: linear-gradient(90deg, #4caf88, #82d4a8);
+  border-radius: 2px; margin: 0 auto 28px;
+}
+.end-body {
+  font-size: 0.95em; color: #555;
+  line-height: 2.1; margin-bottom: 36px;
+}
+.end-body strong { color: #4caf88; }
+.btn-restart {
+  background: #edf7f2; color: #2d7a5f;
+  border: 2px solid #4caf88;
+  padding: 12px 32px; border-radius: 8px;
+  font-size: 0.93em; font-weight: bold;
+  cursor: pointer; font-family: inherit;
+  transition: all 0.2s;
+}
+.btn-restart:hover  { background: #d4eddf; }
+.btn-restart:active { transform: scale(0.97); }
+
 @media(max-width:600px){
   .nav-btn-row { flex-direction: column; }
   button { width: 100%; }
   .stepper { gap: 2px; padding: 10px 8px; }
   .step-label { font-size: 0.58em; }
+  .end-screen { padding: 40px 20px; }
 }
 </style>
 </head>
@@ -377,7 +420,7 @@ button:active { transform: scale(0.97); }
   </div>
 
   <!-- プログレスバー -->
-  <div class="progress-bar-wrap">
+  <div class="progress-bar-wrap" id="progressWrap">
     <span id="progress-label">0 / 14 項目入力済み</span>
     <div class="progress-bar-bg">
       <div class="progress-bar-fill" id="progressFill"></div>
@@ -385,7 +428,7 @@ button:active { transform: scale(0.97); }
   </div>
 
   <!-- ナビゲーター -->
-  <div class="navigator">
+  <div class="navigator" id="navigator">
     <div class="nav-avatar">🤖</div>
     <div class="nav-bubble" id="navBubble">
       こんにちは！現場のアイデアやお困りごとを教えてください。<br>
@@ -414,7 +457,7 @@ button:active { transform: scale(0.97); }
 
       <div class="q-block">
         <label class="q-label">Q2. 氏名 <span class="req">★必須</span></label>
-        <div class="q-hint">👤 フルネームでご記入ください</div>
+        <div class="q-hint">👤 フルネームでご記入ください（匿名での受付はできません）</div>
         <input type="text" id="q2"
                placeholder="例：山田 太郎"
                oninput="onTextInput('q2')" required>
@@ -606,13 +649,31 @@ button:active { transform: scale(0.97); }
         <button type="button" class="btn-prev" onclick="goPrev(4)">← 戻る</button>
         <button type="button" class="btn-preview" onclick="showPreview()">👁️ 内容を確認して送信</button>
       </div>
-      <div style="text-align:center; margin-top:12px;">
-        <button type="button" class="btn-reset" onclick="resetForm()">🔄 最初からやり直す</button>
+      <div style="display:flex; gap:12px; justify-content:center; margin-top:12px; flex-wrap:wrap;">
+        <button type="button" class="btn-reset"  onclick="resetForm()">🔄 最初からやり直す</button>
+        <button type="button" class="btn-finish" onclick="showEndScreen()">✅ 終了</button>
       </div>
     </div>
 
   </form>
-</div>
+
+  <!-- 終了画面 -->
+  <div class="end-screen" id="endScreen">
+    <div class="end-icon">🌿</div>
+    <div class="end-title">ご協力ありがとうございました</div>
+    <div class="end-divider"></div>
+    <div class="end-body">
+      いただいた現場の声は、<strong>医療をよりよくするための大切な一歩</strong>です。<br>
+      担当部署にて内容を確認し、<strong>検討結果をメールにてご連絡</strong>いたします。<br><br>
+      引き続き、現場での気づきやアイデアをぜひお寄せください。<br>
+      皆さまのご協力に、心より感謝申し上げます。💚
+    </div>
+    <button type="button" class="btn-restart" onclick="restartFromEnd()">
+      🔄 新しいアイデアを提案する
+    </button>
+  </div>
+
+</div><!-- /container -->
 
 <!-- プレビュー＆送信モーダル -->
 <div class="modal-overlay" id="previewModal">
@@ -664,6 +725,22 @@ const MAIL_TO = 'ns.morizo@gmail.com';
 
 // 匿名NGワードリスト（小文字で比較）
 const NAME_NG_WORDS = ['匿名', '無記名', 'anonymous', 'anon', '名無し', 'なし', 'ない', 'none', 'no name'];
+
+// ============================================================
+//  UI要素の表示・非表示ヘルパー
+// ============================================================
+const FORM_UI_IDS = ['stepper', 'progressWrap', 'navigator', 'ideaForm'];
+
+function hideFormUI() {
+  FORM_UI_IDS.forEach(id => {
+    document.getElementById(id).style.display = 'none';
+  });
+}
+function showFormUI() {
+  FORM_UI_IDS.forEach(id => {
+    document.getElementById(id).style.display = '';
+  });
+}
 
 // ============================================================
 //  ステップ管理
@@ -1154,6 +1231,25 @@ function resetFormSilent() {
 function resetForm() {
   if (!confirm('⚠️ 入力内容をすべてクリアします。よろしいですか？')) return;
   resetFormSilent();
+}
+
+// ============================================================
+//  終了画面
+// ============================================================
+function showEndScreen() {
+  if (!confirm('フォームを終了します。入力内容はクリアされます。よろしいですか？')) return;
+  hideFormUI();
+  document.getElementById('endScreen').classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  resetFormSilent();
+}
+
+function restartFromEnd() {
+  document.getElementById('endScreen').classList.remove('active');
+  showFormUI();
+  showStep(0);
+  updateProgress();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 // 初期化
