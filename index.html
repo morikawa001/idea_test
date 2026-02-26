@@ -202,10 +202,7 @@ textarea { resize: vertical; min-height: 80px; }
   animation: fadeSlideIn 0.3s ease;
 }
 .other-input-wrap.show { display: block; }
-.other-input-wrap textarea {
-  min-height: 60px;
-  background: white;
-}
+.other-input-wrap textarea { min-height: 60px; background: white; }
 
 /* ===== ボタン ===== */
 .nav-btn-row {
@@ -283,8 +280,7 @@ button:active { transform: scale(0.97); }
   100% { opacity: 1; transform: scale(1); }
 }
 .thank-icon {
-  font-size: 4em;
-  margin-bottom: 16px;
+  font-size: 4em; margin-bottom: 16px;
   animation: iconBounce 0.6s 0.3s cubic-bezier(0.175,0.885,0.32,1.275) both;
 }
 @keyframes iconBounce {
@@ -298,12 +294,26 @@ button:active { transform: scale(0.97); }
 }
 .thank-body {
   font-size: 0.92em; color: #555;
-  line-height: 1.8; margin-bottom: 28px;
+  line-height: 1.9; margin-bottom: 28px;
 }
 .thank-body strong { color: #4caf88; }
-.thank-btn-row {
-  display: flex; flex-direction: column; gap: 10px;
+.thank-reply-box {
+  background: #edf7f2;
+  border-left: 4px solid #4caf88;
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin: 16px 0 24px;
+  font-size: 0.88em;
+  color: #2d7a5f;
+  text-align: left;
+  line-height: 1.7;
 }
+.thank-reply-box .reply-email {
+  font-weight: bold;
+  word-break: break-all;
+  color: #1a5c40;
+}
+.thank-btn-row { display: flex; flex-direction: column; gap: 10px; }
 .btn-new-idea {
   background: linear-gradient(135deg, #2d7a5f, #4caf88);
   color: white; padding: 13px 20px;
@@ -338,6 +348,7 @@ button:active { transform: scale(0.97); }
     <p>現場の気づきやアイデアをカタチにします。3〜5分で入力できます。</p>
   </div>
 
+  <!-- ステッパー -->
   <div class="stepper" id="stepper">
     <div class="step-dot">
       <div class="step-circle active" id="sc0">1</div>
@@ -365,13 +376,15 @@ button:active { transform: scale(0.97); }
     </div>
   </div>
 
+  <!-- プログレスバー -->
   <div class="progress-bar-wrap">
-    <span id="progress-label">0 / 13 項目入力済み</span>
+    <span id="progress-label">0 / 14 項目入力済み</span>
     <div class="progress-bar-bg">
       <div class="progress-bar-fill" id="progressFill"></div>
     </div>
   </div>
 
+  <!-- ナビゲーター -->
   <div class="navigator">
     <div class="nav-avatar">🤖</div>
     <div class="nav-bubble" id="navBubble">
@@ -385,6 +398,7 @@ button:active { transform: scale(0.97); }
     <!-- ステップ1：基本情報 -->
     <div class="block active" id="step0">
       <div class="block-title">📋 第1ステップ：基本情報</div>
+
       <div class="q-block">
         <label class="q-label">Q1. 所属部署 <span class="req">★必須</span></label>
         <select id="q1" required onchange="onSelectChange('q1')">
@@ -397,12 +411,24 @@ button:active { transform: scale(0.97); }
         </select>
         <div class="feedback-box feedback-good" id="fb-q1"></div>
       </div>
+
       <div class="q-block">
         <label class="q-label">Q2. 氏名 <span class="req">★必須</span></label>
-        <input type="text" id="q2" placeholder="例：山田 太郎（匿名希望の場合は「匿名」と入力可）"
+        <input type="text" id="q2"
+               placeholder="例：山田 太郎（匿名希望の場合は「匿名」と入力可）"
                oninput="onTextInput('q2')" required>
         <div class="feedback-box" id="fb-q2"></div>
       </div>
+
+      <div class="q-block">
+        <label class="q-label">Q2-b. 返信用メールアドレス <span class="req">★必須</span></label>
+        <div class="q-hint">📧 アイデアの検討結果をこちらのアドレスにご返信します</div>
+        <input type="text" id="q2b"
+               placeholder="例：yamada.taro@example.com（匿名の場合でも入力をお願いします）"
+               oninput="onEmailInput('q2b')" required>
+        <div class="feedback-box" id="fb-q2b"></div>
+      </div>
+
       <div class="q-block">
         <label class="q-label">Q3. 職種 <span class="req">★必須</span></label>
         <div class="radio-group" id="q3">
@@ -416,6 +442,7 @@ button:active { transform: scale(0.97); }
         </div>
         <div class="feedback-box" id="fb-q3"></div>
       </div>
+
       <div class="nav-btn-row">
         <button type="button" class="btn-next" onclick="goNext(0)">次へ：現場の課題 →</button>
       </div>
@@ -424,6 +451,7 @@ button:active { transform: scale(0.97); }
     <!-- ステップ2：現場の課題 -->
     <div class="block" id="step1">
       <div class="block-title">🔍 第2ステップ：現場の課題 <span class="badge">P：対象・背景</span></div>
+
       <div class="q-block">
         <label class="q-label">Q4. 誰が一番困っていますか？ <span class="req">★必須</span></label>
         <div class="radio-group" id="q4">
@@ -434,6 +462,7 @@ button:active { transform: scale(0.97); }
         </div>
         <div class="feedback-box" id="fb-q4"></div>
       </div>
+
       <div class="q-block">
         <label class="q-label">Q5. 困りごとの発生頻度は？ <span class="req">★必須</span></label>
         <div class="radio-group" id="q5">
@@ -445,6 +474,7 @@ button:active { transform: scale(0.97); }
         </div>
         <div class="feedback-box" id="fb-q5"></div>
       </div>
+
       <div class="q-block">
         <label class="q-label">Q6. どのような悪影響（ペイン）が生じていますか？ <span class="req">★必須</span>（複数選択可）</label>
         <div class="check-group" id="q6">
@@ -462,6 +492,7 @@ button:active { transform: scale(0.97); }
         </div>
         <div class="feedback-box" id="fb-q6"></div>
       </div>
+
       <div class="q-block">
         <label class="q-label">Q7. 困っている具体的な場面を教えてください</label>
         <div class="q-hint">💬 いつ・どこで・誰が・何が起きるかを書くと伝わりやすいです</div>
@@ -469,6 +500,7 @@ button:active { transform: scale(0.97); }
                   oninput="onTextareaInput('q7')"></textarea>
         <div class="feedback-box" id="fb-q7"></div>
       </div>
+
       <div class="nav-btn-row">
         <button type="button" class="btn-prev" onclick="goPrev(1)">← 戻る</button>
         <button type="button" class="btn-next" onclick="goNext(1)">次へ：現状の対応 →</button>
@@ -478,12 +510,14 @@ button:active { transform: scale(0.97); }
     <!-- ステップ3：現在の対応 -->
     <div class="block" id="step2">
       <div class="block-title">🔄 第3ステップ：現在の対応とその限界 <span class="badge">C：比較対照</span></div>
+
       <div class="q-block">
         <label class="q-label">Q8. 現在、現場ではどのように工夫して乗り切っていますか？</label>
         <textarea id="q8" placeholder="例：チューブをまとめてテープで留めている、スタッフが常に付き添う など"
                   oninput="onTextareaInput('q8')"></textarea>
         <div class="feedback-box" id="fb-q8"></div>
       </div>
+
       <div class="q-block">
         <label class="q-label">Q9. 今のやり方の「限界」は何ですか？（複数選択可）</label>
         <div class="check-group" id="q9">
@@ -495,6 +529,7 @@ button:active { transform: scale(0.97); }
         </div>
         <div class="feedback-box" id="fb-q9"></div>
       </div>
+
       <div class="nav-btn-row">
         <button type="button" class="btn-prev" onclick="goPrev(2)">← 戻る</button>
         <button type="button" class="btn-next" onclick="goNext(2)">次へ：アイデア →</button>
@@ -504,6 +539,7 @@ button:active { transform: scale(0.97); }
     <!-- ステップ4：アイデア -->
     <div class="block" id="step3">
       <div class="block-title">💡 第4ステップ：あなたのアイデア <span class="badge">I：介入</span></div>
+
       <div class="q-block">
         <label class="q-label">Q10. どのようなアイテム・システムがあれば解決すると思いますか？ <span class="req">★必須</span></label>
         <div class="q-hint">💭 完成形でなくて大丈夫！「こんなものがあれば…」という段階のアイデアでも歓迎します</div>
@@ -511,6 +547,7 @@ button:active { transform: scale(0.97); }
                   oninput="onIdeaInput()" required></textarea>
         <div class="feedback-box" id="fb-q10"></div>
       </div>
+
       <div class="q-block">
         <label class="q-label">Q11. アイデアのカテゴリー（一番近いもの） <span class="req">★必須</span></label>
         <div class="q-hint">⚡ 一番近いものを選んでください</div>
@@ -522,6 +559,7 @@ button:active { transform: scale(0.97); }
         </div>
         <div class="feedback-box" id="fb-q11"></div>
       </div>
+
       <div class="nav-btn-row">
         <button type="button" class="btn-prev" onclick="goPrev(3)">← 戻る</button>
         <button type="button" class="btn-next" onclick="goNext(3)">次へ：期待効果 →</button>
@@ -531,6 +569,7 @@ button:active { transform: scale(0.97); }
     <!-- ステップ5：期待される効果 -->
     <div class="block" id="step4">
       <div class="block-title">📊 第5ステップ：期待される効果 <span class="badge">O：アウトカム</span></div>
+
       <div class="q-block">
         <label class="q-label">Q12. このアイデアが実現すると、何が改善しますか？ <span class="req">★必須</span>（複数選択可）</label>
         <div class="check-group" id="q12">
@@ -548,6 +587,7 @@ button:active { transform: scale(0.97); }
         </div>
         <div class="feedback-box" id="fb-q12"></div>
       </div>
+
       <div class="q-block">
         <label class="q-label">Q13. どのくらい良くなりそうですか？（わかる範囲で）</label>
         <div class="q-hint">💬 記入例：1日あたり1時間の業務削減 / インシデントが半減 / 術後離床が1日早まる など</div>
@@ -555,10 +595,12 @@ button:active { transform: scale(0.97); }
                   oninput="onTextareaInput('q13')"></textarea>
         <div class="feedback-box" id="fb-q13"></div>
       </div>
+
       <div class="q-block">
         <label class="q-label">Q14. 参考になる写真・資料があればメールに添付してください（任意）</label>
         <div class="q-hint">📎 現在の問題の様子、参考にしたい製品画像、手書きスケッチなど（JPG・PNG・PDF対応）をメール送信時に直接添付してください。</div>
       </div>
+
       <div class="nav-btn-row">
         <button type="button" class="btn-prev" onclick="goPrev(4)">← 戻る</button>
         <button type="button" class="btn-preview" onclick="showPreview()">👁️ 内容を確認して送信</button>
@@ -599,8 +641,12 @@ button:active { transform: scale(0.97); }
       <strong id="thank-name-label"></strong><br>
       あなたの現場からの声が、<br>
       <strong>医療をよりよくするための第一歩</strong>になります。<br><br>
-      提案内容は担当部署にて確認・検討いたします。<br>
-      引き続きアイデアをお寄せください😊
+      いただいたアイデアは担当部署にて内容を確認し、<br>
+      <strong>検討結果を登録いただいたメールアドレスへ返信</strong>いたします。<br>
+      しばらくお待ちください😊
+    </div>
+    <div class="thank-reply-box">
+      📧 返信先：<span class="reply-email" id="thank-reply-email"></span>
     </div>
     <div class="thank-btn-row">
       <button class="btn-new-idea" onclick="startNewIdea()">💡 新しいアイデアを提案する</button>
@@ -656,8 +702,14 @@ function showStep(step) {
 const STEP_REQUIRED = [
   () => {
     const errs = [];
-    if (!getVal('q1'))   errs.push('Q1 所属部署');
-    if (!getVal('q2'))   errs.push('Q2 氏名');
+    if (!getVal('q1'))  errs.push('Q1 所属部署');
+    if (!getVal('q2'))  errs.push('Q2 氏名');
+    const emailVal = getVal('q2b');
+    if (!emailVal) {
+      errs.push('Q2-b 返信用メールアドレス');
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal)) {
+      errs.push('Q2-b メールアドレスの形式が正しくありません');
+    }
     if (!getRadio('q3')) errs.push('Q3 職種');
     return errs;
   },
@@ -749,18 +801,19 @@ function toggleOtherInput(checkId, wrapId) {
 }
 
 // ============================================================
-//  プログレスバー
+//  プログレスバー（14項目）
 // ============================================================
 function updateProgress() {
   const items = [
-    getVal('q1'), getVal('q2'), getRadio('q3'), getRadio('q4'),
+    getVal('q1'), getVal('q2'), getVal('q2b'),
+    getRadio('q3'), getRadio('q4'),
     getRadio('q5'), getChecks('q6').length > 0 ? '1' : '',
     getVal('q7'), getVal('q8'), getChecks('q9').length > 0 ? '1' : '',
     getVal('q10'), getRadio('q11'), getChecks('q12').length > 0 ? '1' : '', getVal('q13')
   ];
   const filled = items.filter(v => v !== '').length;
-  document.getElementById('progress-label').textContent = `${filled} / 13 項目入力済み`;
-  document.getElementById('progressFill').style.width = `${Math.round(filled / 13 * 100)}%`;
+  document.getElementById('progress-label').textContent = `${filled} / 14 項目入力済み`;
+  document.getElementById('progressFill').style.width = `${Math.round(filled / 14 * 100)}%`;
 }
 document.addEventListener('change', updateProgress);
 document.addEventListener('input',  updateProgress);
@@ -779,14 +832,48 @@ function onTextInput(id) {
   if (v === '匿名') showFeedback(id, '🙈 匿名で受け付けます。安心してどうぞ。', 'tip');
   else if (v.length >= 2) showFeedback(id, `✅ ${v} さん、よろしくお願いします！`, 'good');
 }
+function onEmailInput(id) {
+  const v = getVal(id);
+  if (!v) { hideFeedback(id); return; }
+  const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+  if (isEmail) {
+    showFeedback(id, `✅ 「${v}」に検討結果をお送りします！`, 'good');
+  } else {
+    showFeedback(id, '⚠️ メールアドレスの形式を確認してください（例：yamada@example.com）', 'neutral');
+  }
+}
 function onRadioChange(name) {
   highlightSelected(name);
   const v = getRadio(name);
   const feedbackMap = {
-    q3: { '医師':'🩺 医師の視点でのアイデア、大変参考になります！', '看護師':'💉 看護師さんの現場感覚はアイデアの宝庫です！', '薬剤師':'💊 薬剤師さんの専門知識が解決のカギになることも。', '臨床工学技士':'⚙️ 機器・システム系のアイデアも大歓迎です！', '理学療法士・作業療法士':'🏃 リハビリ現場の知見、ぜひ聞かせてください！', '事務職':'📋 事務・管理系の改善アイデアも重要です！', 'その他':'👤 どんな立場からのアイデアも大切にします！' },
-    q4: { '患者さん':'🏥 患者中心のアイデアは最も価値があります！', '自分自身・自部署のスタッフ':'👥 現場スタッフの声が改善の第一歩です！', '他部署のスタッフ':'🤝 部署間の連携改善につながりそうですね。', '病院全体':'🏢 病院全体のシステム改善は大きな影響力があります！' },
-    q5: { '毎日複数回':'🔴 毎日複数回とは、かなり緊急度が高いですね。早急な解決が必要そうです。', '毎日1回程度':'🟠 毎日発生しているなら、確実に解決策が必要です。', '週に数回':'🟡 週に数回の発生でも、積み重なると大きな負担になりますね。', '月に数回':'🟢 頻度は低くても、対策しておく価値は十分あります。', '稀だが発生すると重大':'⚠️ ハイリスクな事象は頻度が低くても最優先で対策が必要です！' },
-    q11: { '医療機器・器具の新規開発や改良':'🔧 機器・器具系のアイデアですね！専門担当者と連携して検討します。', 'アプリ・RPAによる業務自動化・電子化':'💻 デジタル化・自動化のアイデアですね！情報システム担当と連携します。', '既存製品の新しい使い方（転用・適応外使用など）':'♻️ 既存品の転用とは面白い発想ですね！薬事確認も含めて検討します。', '運用ルールやマニュアルの変更':'📄 運用改善のアイデアですね。比較的すぐに実行できる可能性があります！' }
+    q3: {
+      '医師':'🩺 医師の視点でのアイデア、大変参考になります！',
+      '看護師':'💉 看護師さんの現場感覚はアイデアの宝庫です！',
+      '薬剤師':'💊 薬剤師さんの専門知識が解決のカギになることも。',
+      '臨床工学技士':'⚙️ 機器・システム系のアイデアも大歓迎です！',
+      '理学療法士・作業療法士':'🏃 リハビリ現場の知見、ぜひ聞かせてください！',
+      '事務職':'📋 事務・管理系の改善アイデアも重要です！',
+      'その他':'👤 どんな立場からのアイデアも大切にします！'
+    },
+    q4: {
+      '患者さん':'🏥 患者中心のアイデアは最も価値があります！',
+      '自分自身・自部署のスタッフ':'👥 現場スタッフの声が改善の第一歩です！',
+      '他部署のスタッフ':'🤝 部署間の連携改善につながりそうですね。',
+      '病院全体':'🏢 病院全体のシステム改善は大きな影響力があります！'
+    },
+    q5: {
+      '毎日複数回':'🔴 毎日複数回とは、かなり緊急度が高いですね。早急な解決が必要そうです。',
+      '毎日1回程度':'🟠 毎日発生しているなら、確実に解決策が必要です。',
+      '週に数回':'🟡 週に数回の発生でも、積み重なると大きな負担になりますね。',
+      '月に数回':'🟢 頻度は低くても、対策しておく価値は十分あります。',
+      '稀だが発生すると重大':'⚠️ ハイリスクな事象は頻度が低くても最優先で対策が必要です！'
+    },
+    q11: {
+      '医療機器・器具の新規開発や改良':'🔧 機器・器具系のアイデアですね！専門担当者と連携して検討します。',
+      'アプリ・RPAによる業務自動化・電子化':'💻 デジタル化・自動化のアイデアですね！情報システム担当と連携します。',
+      '既存製品の新しい使い方（転用・適応外使用など）':'♻️ 既存品の転用とは面白い発想ですね！薬事確認も含めて検討します。',
+      '運用ルールやマニュアルの変更':'📄 運用改善のアイデアですね。比較的すぐに実行できる可能性があります！'
+    }
   };
   const msg = (feedbackMap[name] || {})[v];
   if (msg) showFeedback(name, msg, 'good');
@@ -797,10 +884,14 @@ function onCheckChange(name) {
   if (name === 'q6') {
     if (checks.length === 0) { hideFeedback('q6'); return; }
     const hasOther = checks.includes('その他');
-    if (checks.length === 1 && hasOther)    showFeedback('q6', '📝 下の欄に具体的な内容を記入してください。', 'tip');
-    else if (checks.length === 1)           showFeedback('q6', `✅ 「${checks[0]}」を選択しました。他にも該当するものがあれば追加してください。`, 'good');
-    else if (checks.length >= 3)            showFeedback('q6', `⚡ ${checks.length}つの問題が重なっているんですね。複合的な課題です。アイデアで一気に解決しましょう！`, 'tip');
-    else                                    showFeedback('q6', `✅ ${checks.length}つ選択済み。他にもあれば追加してください。`, 'good');
+    if (checks.length === 1 && hasOther)
+      showFeedback('q6', '📝 下の欄に具体的な内容を記入してください。', 'tip');
+    else if (checks.length === 1)
+      showFeedback('q6', `✅ 「${checks[0]}」を選択しました。他にも該当するものがあれば追加してください。`, 'good');
+    else if (checks.length >= 3)
+      showFeedback('q6', `⚡ ${checks.length}つの問題が重なっているんですね。複合的な課題です。アイデアで一気に解決しましょう！`, 'tip');
+    else
+      showFeedback('q6', `✅ ${checks.length}つ選択済み。他にもあれば追加してください。`, 'good');
   }
   if (name === 'q9') {
     if (checks.length === 0) { hideFeedback('q9'); return; }
@@ -809,10 +900,14 @@ function onCheckChange(name) {
   if (name === 'q12') {
     if (checks.length === 0) { hideFeedback('q12'); return; }
     const hasOther = checks.includes('その他');
-    if (checks.length === 1 && hasOther)    showFeedback('q12', '📝 下の欄に期待される効果を記入してください。', 'tip');
-    else if (checks.length === 1)           showFeedback('q12', `✅ 「${checks[0]}」を選択。この効果を軸に提案を進めます！`, 'good');
-    else if (checks.length >= 3)            showFeedback('q12', `🚀 ${checks.length}つの改善効果が期待できる、インパクトの大きいアイデアですね！`, 'good');
-    else                                    showFeedback('q12', `✅ ${checks.length}つの改善効果を期待しています！`, 'good');
+    if (checks.length === 1 && hasOther)
+      showFeedback('q12', '📝 下の欄に期待される効果を記入してください。', 'tip');
+    else if (checks.length === 1)
+      showFeedback('q12', `✅ 「${checks[0]}」を選択。この効果を軸に提案を進めます！`, 'good');
+    else if (checks.length >= 3)
+      showFeedback('q12', `🚀 ${checks.length}つの改善効果が期待できる、インパクトの大きいアイデアですね！`, 'good');
+    else
+      showFeedback('q12', `✅ ${checks.length}つの改善効果を期待しています！`, 'good');
   }
 }
 function onTextareaInput(id) {
@@ -843,12 +938,13 @@ function onIdeaInput() {
 }
 
 // ============================================================
-//  バリデーション
+//  バリデーション（最終）
 // ============================================================
 function validate() {
   const required = [
     { val: getVal('q1'),                            label: 'Q1 所属部署' },
     { val: getVal('q2'),                            label: 'Q2 氏名' },
+    { val: getVal('q2b'),                           label: 'Q2-b 返信用メールアドレス' },
     { val: getRadio('q3'),                          label: 'Q3 職種' },
     { val: getRadio('q4'),                          label: 'Q4 困っている対象' },
     { val: getRadio('q5'),                          label: 'Q5 発生頻度' },
@@ -860,6 +956,11 @@ function validate() {
   const missing = required.filter(r => !r.val).map(r => r.label);
   if (missing.length > 0) {
     alert('⚠️ 以下の必須項目が未入力です：\n\n' + missing.join('\n'));
+    return false;
+  }
+  const emailVal = getVal('q2b');
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal)) {
+    alert('⚠️ 返信用メールアドレスの形式が正しくありません。\n例：yamada@example.com');
     return false;
   }
   return true;
@@ -880,13 +981,14 @@ function buildText() {
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 【第1ブロック：基本情報】
-Q1. 所属部署    ： ${getVal('q1') || '（未入力）'}
-Q2. 氏名       ： ${getVal('q2') || '（未入力）'}
-Q3. 職種       ： ${getRadio('q3') || '（未選択）'}
+Q1.   所属部署              ： ${getVal('q1')    || '（未入力）'}
+Q2.   氏名                  ： ${getVal('q2')    || '（未入力）'}
+Q2-b. 返信用メールアドレス   ： ${getVal('q2b')   || '（未入力）'}
+Q3.   職種                  ： ${getRadio('q3')  || '（未選択）'}
 
 【第2ブロック：現場の課題 — P：対象・背景】
-Q4. 困っている対象  ： ${getRadio('q4') || '（未選択）'}
-Q5. 発生頻度       ： ${getRadio('q5') || '（未選択）'}
+Q4. 困っている対象   ： ${getRadio('q4') || '（未選択）'}
+Q5. 発生頻度        ： ${getRadio('q5') || '（未選択）'}
 Q6. 悪影響（ペイン） ： ${q6}
 Q7. 具体的な場面    ：
 ${getVal('q7') || '（未記入）'}
@@ -942,13 +1044,15 @@ function showPreview() {
 }
 
 // ============================================================
-//  モーダル閉じる処理
+//  モーダル操作
 // ============================================================
 function closePreviewAndThank() {
   document.getElementById('previewModal').classList.remove('active');
-  const name = getVal('q2');
+  const name  = getVal('q2');
+  const email = getVal('q2b');
   const label = (name && name !== '匿名') ? `${name} さん、` : '';
   document.getElementById('thank-name-label').textContent = label;
+  document.getElementById('thank-reply-email').textContent = email || '（未入力）';
   document.getElementById('thankModal').classList.add('active');
 }
 function closeThankModal() {
@@ -963,14 +1067,16 @@ function startNewIdea() {
 //  メール送信
 // ============================================================
 function sendMail() {
-  const dept = getVal('q1')   || '不明';
-  const name = getVal('q2')   || '匿名';
-  const cat  = getRadio('q11')|| '未選択';
+  const dept  = getVal('q1')    || '不明';
+  const name  = getVal('q2')    || '匿名';
+  const email = getVal('q2b')   || '未入力';
+  const cat   = getRadio('q11') || '未選択';
   const subject = encodeURIComponent(`【院内アイデア提案】${cat}｜${dept} ${name}`);
   const body    = encodeURIComponent(
     buildText() + '\n\n' +
     '--- 研究計画骨格（PICO）---\n' +
     buildPico().replace(/<[^>]+>/g, '') + '\n\n' +
+    `【返信先メールアドレス】${email}\n` +
     '※参考写真・資料がある場合はこのメールに直接添付してください。'
   );
   window.location.href = `mailto:${MAIL_TO}?subject=${subject}&body=${body}`;
@@ -980,14 +1086,17 @@ function sendMail() {
 //  TXTダウンロード
 // ============================================================
 function downloadTxt() {
-  const text = buildText() + '\n\n--- 研究計画骨格（PICO）---\n' + buildPico().replace(/<[^>]+>/g, '');
-  const now  = new Date();
-  const ts   = `${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}`;
-  const name = getVal('q2') || 'unknown';
-  const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
-  const a    = document.createElement('a');
-  a.href     = URL.createObjectURL(blob);
-  a.download = `idea_${ts}_${name}.txt`;
+  const email = getVal('q2b') || '未入力';
+  const text  = buildText() + '\n\n--- 研究計画骨格（PICO）---\n'
+              + buildPico().replace(/<[^>]+>/g, '')
+              + `\n\n【返信先メールアドレス】${email}`;
+  const now   = new Date();
+  const ts    = `${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}`;
+  const name  = getVal('q2') || 'unknown';
+  const blob  = new Blob([text], { type: 'text/plain;charset=utf-8' });
+  const a     = document.createElement('a');
+  a.href      = URL.createObjectURL(blob);
+  a.download  = `idea_${ts}_${name}.txt`;
   a.click();
 }
 
@@ -996,15 +1105,18 @@ function downloadTxt() {
 // ============================================================
 function resetFormSilent() {
   document.getElementById('ideaForm').reset();
-  document.querySelectorAll('.feedback-box').forEach(el => { el.className = 'feedback-box'; el.textContent = ''; });
-  document.querySelectorAll('.radio-group label, .check-group label').forEach(lbl => lbl.classList.remove('selected'));
+  document.querySelectorAll('.feedback-box').forEach(el => {
+    el.className = 'feedback-box'; el.textContent = '';
+  });
+  document.querySelectorAll('.radio-group label, .check-group label').forEach(lbl => {
+    lbl.classList.remove('selected');
+  });
   ['q6-other-wrap', 'q12-other-wrap'].forEach(id => {
     document.getElementById(id).classList.remove('show');
   });
   showStep(0);
   updateProgress();
 }
-
 function resetForm() {
   if (!confirm('⚠️ 入力内容をすべてクリアします。よろしいですか？')) return;
   resetFormSilent();
