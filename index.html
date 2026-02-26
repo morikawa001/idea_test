@@ -294,7 +294,7 @@ button:active { transform: scale(0.97); }
 }
 .thank-body {
   font-size: 0.92em; color: #555;
-  line-height: 1.9; margin-bottom: 28px;
+  line-height: 1.9; margin-bottom: 16px;
 }
 .thank-body strong { color: #4caf88; }
 .thank-reply-box {
@@ -302,7 +302,7 @@ button:active { transform: scale(0.97); }
   border-left: 4px solid #4caf88;
   border-radius: 8px;
   padding: 12px 16px;
-  margin: 16px 0 24px;
+  margin: 0 0 24px;
   font-size: 0.88em;
   color: #2d7a5f;
   text-align: left;
@@ -414,8 +414,9 @@ button:active { transform: scale(0.97); }
 
       <div class="q-block">
         <label class="q-label">Q2. 氏名 <span class="req">★必須</span></label>
+        <div class="q-hint">👤 フルネームでご記入ください（匿名での受付はできません）</div>
         <input type="text" id="q2"
-               placeholder="例：山田 太郎（匿名希望の場合は「匿名」と入力可）"
+               placeholder="例：山田 太郎"
                oninput="onTextInput('q2')" required>
         <div class="feedback-box" id="fb-q2"></div>
       </div>
@@ -424,7 +425,7 @@ button:active { transform: scale(0.97); }
         <label class="q-label">Q2-b. 返信用メールアドレス <span class="req">★必須</span></label>
         <div class="q-hint">📧 アイデアの検討結果をこちらのアドレスにご返信します</div>
         <input type="text" id="q2b"
-               placeholder="例：yamada.taro@example.com（匿名の場合でも入力をお願いします）"
+               placeholder="例：yamada.taro@example.com"
                oninput="onEmailInput('q2b')" required>
         <div class="feedback-box" id="fb-q2b"></div>
       </div>
@@ -661,6 +662,9 @@ button:active { transform: scale(0.97); }
 // ============================================================
 const MAIL_TO = 'ns.morizo@gmail.com';
 
+// 匿名NGワードリスト（小文字で比較）
+const NAME_NG_WORDS = ['匿名', '無記名', 'anonymous', 'anon', '名無し', 'なし', 'ない', 'none', 'no name'];
+
 // ============================================================
 //  ステップ管理
 // ============================================================
@@ -699,17 +703,29 @@ function showStep(step) {
 // ============================================================
 //  ステップ検証
 // ============================================================
+function isNGName(val) {
+  return NAME_NG_WORDS.some(w => val.toLowerCase() === w.toLowerCase());
+}
+
 const STEP_REQUIRED = [
   () => {
     const errs = [];
-    if (!getVal('q1'))  errs.push('Q1 所属部署');
-    if (!getVal('q2'))  errs.push('Q2 氏名');
+    if (!getVal('q1')) errs.push('Q1 所属部署');
+
+    const nameVal = getVal('q2');
+    if (!nameVal) {
+      errs.push('Q2 氏名');
+    } else if (isNGName(nameVal)) {
+      errs.push('Q2 氏名（匿名での受付はできません。お名前をご記入ください）');
+    }
+
     const emailVal = getVal('q2b');
     if (!emailVal) {
       errs.push('Q2-b 返信用メールアドレス');
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal)) {
       errs.push('Q2-b メールアドレスの形式が正しくありません');
     }
+
     if (!getRadio('q3')) errs.push('Q3 職種');
     return errs;
   },
@@ -737,7 +753,7 @@ const STEP_REQUIRED = [
 function goNext(step) {
   const errs = STEP_REQUIRED[step]();
   if (errs.length > 0) {
-    alert('⚠️ 以下の必須項目が未入力です：\n\n' + errs.join('\n'));
+    alert('⚠️ 以下の必須項目を確認してください：\n\n' + errs.join('\n'));
     return;
   }
   showStep(step + 1);
@@ -826,12 +842,21 @@ function onSelectChange(id) {
   if (v) showFeedback(id, `✅ 「${v}」で登録します！`, 'good');
   else   hideFeedback(id);
 }
+
 function onTextInput(id) {
   const v = getVal(id);
   if (!v) { hideFeedback(id); return; }
-  if (v === '匿名') showFeedback(id, '🙈 匿名で受け付けます。安心してどうぞ。', 'tip');
-  else if (v.length >= 2) showFeedback(id, `✅ ${v} さん、よろしくお願いします！`, 'good');
+  if (isNGName(v)) {
+    showFeedback(id, '⚠️ 匿名での受付はできません。お名前をフルネームでご記入ください。', 'neutral');
+    return;
+  }
+  if (v.length < 2) {
+    showFeedback(id, '✏️ お名前をフルネームでご記入ください。', 'neutral');
+    return;
+  }
+  showFeedback(id, `✅ ${v} さん、よろしくお願いします！`, 'good');
 }
+
 function onEmailInput(id) {
   const v = getVal(id);
   if (!v) { hideFeedback(id); return; }
@@ -842,6 +867,7 @@ function onEmailInput(id) {
     showFeedback(id, '⚠️ メールアドレスの形式を確認してください（例：yamada@example.com）', 'neutral');
   }
 }
+
 function onRadioChange(name) {
   highlightSelected(name);
   const v = getRadio(name);
@@ -878,6 +904,7 @@ function onRadioChange(name) {
   const msg = (feedbackMap[name] || {})[v];
   if (msg) showFeedback(name, msg, 'good');
 }
+
 function onCheckChange(name) {
   highlightChecked(name);
   const checks = getChecks(name);
@@ -910,6 +937,7 @@ function onCheckChange(name) {
       showFeedback('q12', `✅ ${checks.length}つの改善効果を期待しています！`, 'good');
   }
 }
+
 function onTextareaInput(id) {
   const v = getVal(id); if (!v) { hideFeedback(id); return; }
   const len = v.length;
@@ -928,6 +956,7 @@ function onTextareaInput(id) {
     else        showFeedback('q13', '💡 「〇〇分削減」「〇〇%改善」など数値で表現できると、より実現のイメージが湧きます。', 'tip');
   }
 }
+
 function onIdeaInput() {
   const v = getVal('q10'); if (!v) { hideFeedback('q10'); return; }
   const len = v.length;
@@ -958,6 +987,11 @@ function validate() {
     alert('⚠️ 以下の必須項目が未入力です：\n\n' + missing.join('\n'));
     return false;
   }
+  const nameVal = getVal('q2');
+  if (isNGName(nameVal)) {
+    alert('⚠️ 匿名での受付はできません。\nお名前をフルネームでご記入ください。');
+    return false;
+  }
   const emailVal = getVal('q2b');
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal)) {
     alert('⚠️ 返信用メールアドレスの形式が正しくありません。\n例：yamada@example.com');
@@ -981,10 +1015,10 @@ function buildText() {
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 【第1ブロック：基本情報】
-Q1.   所属部署              ： ${getVal('q1')    || '（未入力）'}
-Q2.   氏名                  ： ${getVal('q2')    || '（未入力）'}
-Q2-b. 返信用メールアドレス   ： ${getVal('q2b')   || '（未入力）'}
-Q3.   職種                  ： ${getRadio('q3')  || '（未選択）'}
+Q1.   所属部署              ： ${getVal('q1')   || '（未入力）'}
+Q2.   氏名                  ： ${getVal('q2')   || '（未入力）'}
+Q2-b. 返信用メールアドレス   ： ${getVal('q2b')  || '（未入力）'}
+Q3.   職種                  ： ${getRadio('q3') || '（未選択）'}
 
 【第2ブロック：現場の課題 — P：対象・背景】
 Q4. 困っている対象   ： ${getRadio('q4') || '（未選択）'}
@@ -1050,7 +1084,7 @@ function closePreviewAndThank() {
   document.getElementById('previewModal').classList.remove('active');
   const name  = getVal('q2');
   const email = getVal('q2b');
-  const label = (name && name !== '匿名') ? `${name} さん、` : '';
+  const label = name ? `${name} さん、` : '';
   document.getElementById('thank-name-label').textContent = label;
   document.getElementById('thank-reply-email').textContent = email || '（未入力）';
   document.getElementById('thankModal').classList.add('active');
@@ -1068,7 +1102,7 @@ function startNewIdea() {
 // ============================================================
 function sendMail() {
   const dept  = getVal('q1')    || '不明';
-  const name  = getVal('q2')    || '匿名';
+  const name  = getVal('q2')    || '（未入力）';
   const email = getVal('q2b')   || '未入力';
   const cat   = getRadio('q11') || '未選択';
   const subject = encodeURIComponent(`【院内アイデア提案】${cat}｜${dept} ${name}`);
