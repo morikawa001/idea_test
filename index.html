@@ -268,7 +268,6 @@ button:active { transform: scale(0.97); }
 .btn-mail  { background: #4caf88; color: white; }
 .btn-dl    { background: #2d7a5f; color: white; }
 .btn-close { background: #b2c5ba; color: white; }
-
 /* ===== 感謝モーダル ===== */
 .thank-modal-overlay {
   display: none; position: fixed;
@@ -505,7 +504,6 @@ button:active { transform: scale(0.97); }
         <button type="button" class="btn-next" onclick="goNext(0)">次へ：困りごとを教える →</button>
       </div>
     </div>
-
     <!-- ステップ2：現場の困りごと -->
     <div class="block" id="step1">
       <div class="block-title">🔍 第2ステップ：現場の困りごと <span class="badge">P：対象・背景</span></div>
@@ -706,7 +704,7 @@ button:active { transform: scale(0.97); }
     </div>
     <div class="modal-btn-row">
       <button class="btn-mail"  onclick="sendMail()">✉️ メールで送信</button>
-      <button class="btn-dl"    onclick="downloadTxt()">💾 TXTで保存</button>
+      <button class="btn-dl"    onclick="downloadTxt()">💾 CSVで保存</button>
       <button class="btn-close" onclick="closePreviewAndThank()">✖ 閉じる</button>
     </div>
   </div>
@@ -734,14 +732,12 @@ button:active { transform: scale(0.97); }
     </div>
   </div>
 </div>
-
 <script>
 // ============================================================
 //  設定
 // ============================================================
 const MAIL_TO = 'ns.morizo@gmail.com';
 
-// 匿名NGワードリスト（小文字で比較）
 const NAME_NG_WORDS = ['匿名', '無記名', 'anonymous', 'anon', '名無し', 'なし', 'ない', 'none', 'no name'];
 
 // ============================================================
@@ -750,14 +746,10 @@ const NAME_NG_WORDS = ['匿名', '無記名', 'anonymous', 'anon', '名無し', 
 const FORM_UI_IDS = ['stepper', 'progressWrap', 'navigator', 'ideaForm'];
 
 function hideFormUI() {
-  FORM_UI_IDS.forEach(id => {
-    document.getElementById(id).style.display = 'none';
-  });
+  FORM_UI_IDS.forEach(id => { document.getElementById(id).style.display = 'none'; });
 }
 function showFormUI() {
-  FORM_UI_IDS.forEach(id => {
-    document.getElementById(id).style.display = '';
-  });
+  FORM_UI_IDS.forEach(id => { document.getElementById(id).style.display = ''; });
 }
 
 // ============================================================
@@ -806,21 +798,18 @@ const STEP_REQUIRED = [
   () => {
     const errs = [];
     if (!getVal('q1')) errs.push('Q1 所属部署');
-
     const nameVal = getVal('q2');
     if (!nameVal) {
       errs.push('Q2 氏名');
     } else if (isNGName(nameVal)) {
       errs.push('Q2 氏名（匿名での受付はできません。お名前をご記入ください）');
     }
-
     const emailVal = getVal('q2b');
     if (!emailVal) {
       errs.push('Q2-b 返信用メールアドレス');
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal)) {
       errs.push('Q2-b メールアドレスの形式が正しくありません');
     }
-
     if (!getRadio('q3')) errs.push('Q3 職種');
     return errs;
   },
@@ -928,7 +917,6 @@ function updateProgress() {
 }
 document.addEventListener('change', updateProgress);
 document.addEventListener('input',  updateProgress);
-
 // ============================================================
 //  フィードバック関数群
 // ============================================================
@@ -1048,133 +1036,196 @@ function onTextareaInput(id) {
   if (id === 'q13') {
     const hasNum = /[0-9０-９]/.test(v);
     if (hasNum) showFeedback('q13', '🎯 数値が入っていますね！具体的な目標があると、検討がしやすくなります。', 'good');
-    else        showFeedback('q13', '💡 「〇〇分削減」「〇〇%改善」など数値で表現できると、さらに伝わりやすくなります。感覚的な表現でも大丈夫です！', 'tip');
+    else        showFeedback('q13', '✅ 感覚的な表現でも十分参考になります！', 'tip');
   }
 }
 
 function onIdeaInput() {
   const v = getVal('q10'); if (!v) { hideFeedback('q10'); return; }
   const len = v.length;
-  if (len < 20)       showFeedback('q10', '💭 アイデアの芽が出てきました！もう少し膨らませてみてください。', 'neutral');
-  else if (len < 60)  showFeedback('q10', '💡 いいですね！「誰が・何を・どうやって使うか」を少し加えるとさらに伝わりやすくなります。', 'tip');
-  else if (len < 120) showFeedback('q10', '✨ だいぶ具体的になってきました！素晴らしいアイデアです。', 'good');
-  else                showFeedback('q10', '🚀 とても詳しく書いてくださいました！実現に向けて一緒に考えていきます。', 'good');
+  if (len < 20)       showFeedback('q10', '💭 もう少し詳しく教えてください。どんな断片的なアイデアでも大丈夫です！', 'neutral');
+  else if (len < 80)  showFeedback('q10', '✨ いいですね！もう少し具体的なイメージがあれば、ぜひ追加してください。', 'tip');
+  else                showFeedback('q10', '🌟 素晴らしいアイデアです！具体的に書いていただき、ありがとうございます。', 'good');
 }
 
 // ============================================================
-//  バリデーション（最終）
-// ============================================================
-function validate() {
-  const required = [
-    { val: getVal('q1'),               label: 'Q1 所属部署' },
-    { val: getVal('q2'),               label: 'Q2 氏名' },
-    { val: getVal('q2b'),              label: 'Q2-b メールアドレス' },
-    { val: getRadio('q3'),             label: 'Q3 職種' },
-    { val: getRadio('q4'),             label: 'Q4 困っている対象' },
-    { val: getRadio('q5'),             label: 'Q5 発生頻度' },
-    { val: getChecks('q6').length > 0 ? '1' : '', label: 'Q6 困りごと・影響' },
-    { val: getVal('q10'),              label: 'Q10 アイデア' },
-    { val: getRadio('q11'),            label: 'Q11 カテゴリー' },
-    { val: getChecks('q12').length > 0 ? '1' : '', label: 'Q12 期待できる効果' },
-  ];
-  const missing = required.filter(r => !r.val).map(r => r.label);
-
-  const nameVal = getVal('q2');
-  if (nameVal && isNGName(nameVal)) missing.push('Q2 氏名（匿名での受付はできません）');
-
-  const emailVal = getVal('q2b');
-  if (emailVal && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal))
-    missing.push('Q2-b メールアドレス（形式が正しくありません）');
-
-  return missing;
-}
-
-// ============================================================
-//  プレビュー生成
+//  プレビュー・送信
 // ============================================================
 function buildText() {
   const q6v  = getQ6Values();
   const q9v  = getChecks('q9');
   const q12v = getQ12Values();
 
-  return [
-    '═══════════════════════════════════',
-    '  医療をよくするアイデア提案フォーム',
-    '  ～現場の声を、改善のかたちへ～',
-    '═══════════════════════════════════',
+  const lines = [
+    '━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
+    '　　アイデア・お困りごと提案フォーム',
+    '━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
     '',
-    '【提案者情報】',
-    `  所属部署  ：${getVal('q1')}`,
-    `  氏　　名  ：${getVal('q2')}`,
-    `  メール    ：${getVal('q2b')}`,
-    `  職　　種  ：${getRadio('q3')}`,
+    '【基本情報】',
+    `・所属部署：${getVal('q1')}`,
+    `・氏　　名：${getVal('q2')}`,
+    `・メール　：${getVal('q2b')}`,
+    `・職　　種：${getRadio('q3')}`,
     '',
-    '【P：現場の困りごと（Problem / Population）】',
-    `  困っている対象  ：${getRadio('q4')}`,
-    `  発生頻度        ：${getRadio('q5')}`,
-    `  主な影響・困りごと：`,
-    ...q6v.map(v => `    ・${v}`),
-    `  具体的な場面    ：`,
-    `    ${getVal('q7') || '（記入なし）'}`,
+    '【P：対象・困りごと】',
+    `・困っている対象：${getRadio('q4')}`,
+    `・発生頻度　　　：${getRadio('q5')}`,
+    `・困りごと・影響：${q6v.join(' / ')}`,
+    `・具体的な場面　：${getVal('q7') || '（未記入）'}`,
     '',
-    '【C：現状の対応（Comparison / Current practice）】',
-    `  現在の工夫      ：`,
-    `    ${getVal('q8') || '（記入なし）'}`,
-    `  今の対応の限界  ：`,
-    ...(q9v.length ? q9v.map(v => `    ・${v}`) : ['    （記入なし）']),
+    '【C：現在の対応】',
+    `・現在の工夫：${getVal('q8') || '（未記入）'}`,
+    `・うまくいっていない点：${q9v.length ? q9v.join(' / ') : '（未選択）'}`,
     '',
-    '【I：提案するアイデア（Intervention）】',
-    `  アイデア内容    ：`,
-    `    ${getVal('q10')}`,
-    `  カテゴリー      ：${getRadio('q11')}`,
+    '【I：アイデア】',
+    `・アイデア内容：${getVal('q10')}`,
+    `・カテゴリー　：${getRadio('q11')}`,
     '',
-    '【O：期待できる効果（Outcome）】',
-    `  改善が見込まれること：`,
-    ...q12v.map(v => `    ・${v}`),
-    `  期待される改善度  ：`,
-    `    ${getVal('q13') || '（記入なし）'}`,
+    '【O：期待できる効果】',
+    `・改善効果　　：${q12v.join(' / ')}`,
+    `・改善の程度　：${getVal('q13') || '（未記入）'}`,
     '',
-    '─────────────────────────────────',
-    `  提出日時：${new Date().toLocaleString('ja-JP')}`,
-    '─────────────────────────────────',
-  ].join('\n');
+    `送信日時：${new Date().toLocaleString('ja-JP')}`,
+    '━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
+  ];
+  return lines.join('\n');
+}
+// ============================================================
+//  CSV縦持ち形式でデータを構築
+// ============================================================
+function escapeCSV(v) {
+  if (v == null) v = '';
+  v = String(v);
+  if (v.includes('"') || v.includes(',') || v.includes('\n') || v.includes('\r')) {
+    return '"' + v.replace(/"/g, '""') + '"';
+  }
+  return v;
 }
 
-function buildPICO() {
-  const p  = getRadio('q4');
-  const i  = getVal('q10');
-  const c  = getVal('q8') || '従来の対応方法';
-  const o  = getQ12Values().join('、');
-  const q13 = getVal('q13');
+function buildCsvText() {
+  const now          = new Date();
+  const submissionId = now.toISOString().replace(/[-:.TZ]/g, '').slice(0, 15);
+  const submittedAt  = now.toLocaleString('ja-JP');
 
-  if (!p || !i || !o) return '';
+  const q6v  = getQ6Values();
+  const q9v  = getChecks('q9');
+  const q12v = getQ12Values();
 
-  let text = `<strong>P（対象）：</strong>${p}が抱える「${getQ6Values().slice(0,2).join('・')}」の課題<br>`;
-  text += `<strong>I（方法）：</strong>${i}<br>`;
-  text += `<strong>C（比較）：</strong>${c}<br>`;
-  text += `<strong>O（目標）：</strong>${o}`;
-  if (q13) text += `（目安：${q13}）`;
-  return text;
+  const rows = [];
+  rows.push('submission_id,submitted_at,field_name,value');
+
+  function addRow(fieldName, value) {
+    rows.push([
+      escapeCSV(submissionId),
+      escapeCSV(submittedAt),
+      escapeCSV(fieldName),
+      escapeCSV(value || '')
+    ].join(','));
+  }
+
+  addRow('q1_department',  getVal('q1'));
+  addRow('q2_name',        getVal('q2'));
+  addRow('q2b_email',      getVal('q2b'));
+  addRow('q3_occupation',  getRadio('q3'));
+  addRow('q4_who_suffers', getRadio('q4'));
+  addRow('q5_frequency',   getRadio('q5'));
+
+  if (q6v.length > 0) {
+    q6v.forEach((v, idx) => addRow('q6_problem_' + (idx + 1), v));
+  } else {
+    addRow('q6_problem_1', '');
+  }
+
+  addRow('q7_scene', getVal('q7'));
+  addRow('q8_current_workaround', getVal('q8'));
+
+  if (q9v.length > 0) {
+    q9v.forEach((v, idx) => addRow('q9_limitation_' + (idx + 1), v));
+  } else {
+    addRow('q9_limitation_1', '');
+  }
+
+  addRow('q10_idea',     getVal('q10'));
+  addRow('q11_category', getRadio('q11'));
+
+  if (q12v.length > 0) {
+    q12v.forEach((v, idx) => addRow('q12_outcome_' + (idx + 1), v));
+  } else {
+    addRow('q12_outcome_1', '');
+  }
+
+  addRow('q13_expected_improvement', getVal('q13'));
+
+  return rows.join('\n');
+}
+
+// ============================================================
+//  メール送信（読みやすい本文 ＋ 末尾にCSVデータを追記）
+// ============================================================
+function sendMail() {
+  const humanText = buildText();
+  const csvText   = buildCsvText();
+
+  const fullBody = humanText
+    + '\n\n'
+    + '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n'
+    + '【CSV集計用データ（縦持ち形式）】\n'
+    + '※ 以下をCSVファイルに保存して集計にご利用ください\n'
+    + '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n'
+    + csvText;
+
+  const subject = encodeURIComponent(`【アイデア提案】${getVal('q2')}（${getVal('q1')}）`);
+  const body    = encodeURIComponent(fullBody);
+  window.location.href = `mailto:${MAIL_TO}?subject=${subject}&body=${body}`;
+  closePreviewModal();
+  showThankModal();
+}
+
+// ============================================================
+//  CSVダウンロード（UTF-8 BOM付き：Excelでも文字化けしない）
+// ============================================================
+function downloadTxt() {
+  const BOM  = '\uFEFF';
+  const blob = new Blob([BOM + buildCsvText()], { type: 'text/csv;charset=utf-8' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  const name = getVal('q2').replace(/\s/g, '') || 'proposal';
+  a.href     = url;
+  a.download = `アイデア提案_${name}_${new Date().toLocaleDateString('ja-JP').replace(/\//g, '')}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
 }
 
 // ============================================================
 //  プレビューモーダル
 // ============================================================
 function showPreview() {
-  const missing = validate();
-  if (missing.length > 0) {
-    alert('⚠️ 以下の必須項目をご確認ください：\n\n' + missing.join('\n'));
+  const errs = STEP_REQUIRED[4]();
+  if (errs.length > 0) {
+    alert('⚠️ 以下の必須項目を確認してください：\n\n' + errs.join('\n'));
     return;
   }
   document.getElementById('previewText').textContent = buildText();
-  const pico = buildPICO();
-  const picoBox = document.getElementById('picoBox');
-  if (pico) {
-    document.getElementById('picoContent').innerHTML = pico;
-    picoBox.style.display = 'block';
+
+  const idea     = getVal('q10');
+  const who      = getRadio('q4');
+  const freq     = getRadio('q5');
+  const category = getRadio('q11');
+  const outcomes = getQ12Values();
+
+  if (idea && who && category && outcomes.length > 0) {
+    const picoText = [
+      `<b>P（対象・問題）：</b>${who}が、${freq}の頻度で困っている`,
+      `<b>I（介入・アイデア）：</b>${idea.slice(0,120)}${idea.length>120?'…':''}`,
+      `<b>C（比較対照）：</b>${getVal('q8') || '現状の対応なし・不明'}`,
+      `<b>O（期待できる効果）：</b>${outcomes.join('、')}`,
+    ].join('<br><br>');
+    document.getElementById('picoContent').innerHTML = picoText;
+    document.getElementById('picoBox').style.display = 'block';
   } else {
-    picoBox.style.display = 'none';
+    document.getElementById('picoBox').style.display = 'none';
   }
+
   document.getElementById('previewModal').classList.add('active');
 }
 
@@ -1182,42 +1233,11 @@ function closePreviewModal() {
   document.getElementById('previewModal').classList.remove('active');
 }
 
-function closePreviewAndThank() {
-  closePreviewModal();
-}
-
-// ============================================================
-//  メール送信
-// ============================================================
-function sendMail() {
-  const subject = encodeURIComponent(`【アイデア提案】${getVal('q2')}（${getVal('q1')}）`);
-  const body    = encodeURIComponent(buildText());
-  window.location.href = `mailto:${MAIL_TO}?subject=${subject}&body=${body}`;
-  closePreviewModal();
-  showThankModal();
-}
-
-// ============================================================
-//  TXTダウンロード
-// ============================================================
-function downloadTxt() {
-  const blob = new Blob([buildText()], { type: 'text/plain;charset=utf-8' });
-  const url  = URL.createObjectURL(blob);
-  const a    = document.createElement('a');
-  const name = getVal('q2').replace(/\s/g,'') || 'proposal';
-  a.href     = url;
-  a.download = `アイデア提案_${name}_${new Date().toLocaleDateString('ja-JP').replace(/\//g,'')}.txt`;
-  a.click();
-  URL.revokeObjectURL(url);
-}
-
-// ============================================================
-//  感謝モーダル
-// ============================================================
 function showThankModal() {
   const name = getVal('q2');
-  document.getElementById('thank-name-label').textContent = name ? `${name} さん` : '';
-  document.getElementById('thank-reply-email').textContent = getVal('q2b');
+  const email = getVal('q2b');
+  document.getElementById('thank-name-label').textContent = `${name} さん`;
+  document.getElementById('thank-reply-email').textContent = email;
   document.getElementById('thankModal').classList.add('active');
 }
 
@@ -1225,9 +1245,35 @@ function closeThankModal() {
   document.getElementById('thankModal').classList.remove('active');
 }
 
+function closePreviewAndThank() {
+  closePreviewModal();
+  showThankModal();
+}
+
 function startNewIdea() {
   closeThankModal();
   resetForm();
+}
+// ============================================================
+//  フォームリセット
+// ============================================================
+function resetForm() {
+  document.getElementById('ideaForm').reset();
+  document.querySelectorAll('.feedback-box').forEach(el => {
+    el.className = 'feedback-box'; el.textContent = '';
+  });
+  document.querySelectorAll('.radio-group label, .check-group label').forEach(lbl => {
+    lbl.classList.remove('selected');
+  });
+  document.querySelectorAll('.other-input-wrap').forEach(w => {
+    w.classList.remove('show');
+    const ta = w.querySelector('textarea');
+    if (ta) ta.value = '';
+  });
+  showFormUI();
+  document.getElementById('endScreen').classList.remove('active');
+  showStep(0);
+  updateProgress();
 }
 
 // ============================================================
@@ -1236,32 +1282,14 @@ function startNewIdea() {
 function showEndScreen() {
   hideFormUI();
   document.getElementById('endScreen').classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function restartFromEnd() {
   document.getElementById('endScreen').classList.remove('active');
-  showFormUI();
   resetForm();
 }
 
-// ============================================================
-//  フォームリセット
-// ============================================================
-function resetForm() {
-  document.getElementById('ideaForm').reset();
-  document.querySelectorAll('.feedback-box').forEach(el => {
-    el.className = 'feedback-box';
-    el.textContent = '';
-  });
-  document.querySelectorAll('.radio-group label, .check-group label').forEach(lbl => {
-    lbl.classList.remove('selected');
-  });
-  document.querySelectorAll('.other-input-wrap').forEach(w => {
-    w.classList.remove('show');
-  });
-  showStep(0);
-  updateProgress();
-}
 </script>
 </body>
 </html>
