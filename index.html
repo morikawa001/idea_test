@@ -818,6 +818,7 @@ function goNext(step) {
     alert('⚠️ 以下の必須項目を確認してください：\n\n' + errs.join('\n'));
     return;
   }
+  sendLog('step_moved', step + 1);
   showStep(step + 1);
 }
 function goPrev(step) { showStep(step - 1); }
@@ -1135,6 +1136,8 @@ function sendMail() {
   const fullBody  = humanText + '\n\n\n--- CSV形式（システム取込用） ---\n' + csvText;
   const subject = encodeURIComponent(`【アイデア提案】${getVal('q2')}（${getVal('q1')}）`);
   const body    = encodeURIComponent(fullBody);
+    formCompleted = true;
+  sendLog('completed', currentStep);
   window.location.href = `mailto:${MAIL_TO}?subject=${subject}&body=${body}`;
   closePreviewModal();
   showThankModal();
@@ -1224,6 +1227,7 @@ function resetForm() {
 //  終了画面
 // ============================================================
 function showEndScreen() {
+  if (!formCompleted) sendLog('abandoned_end_btn', currentStep);
   hideFormUI();
   document.getElementById('endScreen').classList.add('active');
   window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -1233,6 +1237,39 @@ function restartFromEnd() {
   document.getElementById('endScreen').classList.remove('active');
   resetForm();
 }
+// ============================================================
+//  GAS トラッキング
+// ============================================================
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbym7HeLAHQrwLjebH0OCZnBcqpmvyP2ZcMS235f_myvtuqvqVy9J7xj6I7FyB4KnMFF/exec';
+
+const _urlParams  = new URLSearchParams(window.location.search);
+const SESSION_ID  = _urlParams.get('sid') || 'direct_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+const FORM_TYPE   = _urlParams.get('ft')  || 'A';
+
+let formCompleted = false;
+
+function sendLog(status, step) {
+  var payload = {
+    timestamp:  new Date().toISOString(),
+    form_type:  FORM_TYPE,
+    last_step:  step,
+    status:     status,
+    session_id: SESSION_ID
+  };
+  fetch(GAS_URL, {
+    method:    'POST',
+    body:      JSON.stringify(payload),
+    keepalive: true
+  }).catch(function() {});
+}
+
+sendLog('form_opened', 0);
+
+document.addEventListener('visibilitychange', function() {
+  if (document.visibilityState === 'hidden' && !formCompleted) {
+    sendLog('abandoned', currentStep);
+  }
+});
 </script>
 </body>
 </html>
