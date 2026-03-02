@@ -1160,7 +1160,19 @@ function startCloseCountdown(seconds) {
     if (countdownEl) countdownEl.textContent = remaining;
     if (remaining <= 0) {
       clearInterval(timer);
+
+      // ① まず window.close() を試みる（スクリプトで開かれた場合に有効）
       window.close();
+
+      // ② 300ms 後も閉じられなかった場合 → 終了画面を表示
+      setTimeout(() => {
+        const thankModal = document.getElementById('thankModal');
+        if (thankModal && thankModal.classList.contains('active')) {
+          thankModal.classList.remove('active');
+          closeThankModal();
+          showEndScreen();
+        }
+      }, 300);
     }
   }, 1000);
 }
