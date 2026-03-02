@@ -702,6 +702,9 @@ button:active { transform: scale(0.97); }
     <div class="thank-reply-box">
       📧 返信先：<span class="reply-email" id="thank-reply-email"></span>
     </div>
+        <p id="close-countdown-wrap" style="font-size:0.82em; color:#888; margin-bottom:12px;">
+      <span id="close-countdown">3</span> 秒後に自動的に閉じます
+    </p>
     <div class="thank-btn-row">
       <button class="btn-new-idea" onclick="startNewIdea()">💡 新しいアイデアを提案する</button>
       <button class="btn-just-close" onclick="closeThankModal()">このまま閉じる</button>
@@ -1136,11 +1139,30 @@ function sendMail() {
   const fullBody  = humanText + '\n\n\n--- CSV形式（システム取込用） ---\n' + csvText;
   const subject = encodeURIComponent(`【アイデア提案】${getVal('q2')}（${getVal('q1')}）`);
   const body    = encodeURIComponent(fullBody);
-    formCompleted = true;
+  formCompleted = true;
   sendLog('completed', currentStep);
   window.location.href = `mailto:${MAIL_TO}?subject=${subject}&body=${body}`;
   closePreviewModal();
   showThankModal();
+  startCloseCountdown(3); // ← 追加
+}
+
+// ============================================================
+//  自動終了カウントダウン（sendMail後に呼び出す）
+// ============================================================
+function startCloseCountdown(seconds) {
+  let remaining = seconds;
+  const countdownEl = document.getElementById('close-countdown');
+  if (countdownEl) countdownEl.textContent = remaining;
+
+  const timer = setInterval(() => {
+    remaining--;
+    if (countdownEl) countdownEl.textContent = remaining;
+    if (remaining <= 0) {
+      clearInterval(timer);
+      window.close();
+    }
+  }, 1000);
 }
 
 // ============================================================
