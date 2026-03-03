@@ -1437,19 +1437,7 @@ function showSurveyFromPreview() {
   closePreviewModal();
   document.getElementById('surveyModal').classList.add('active');
 }
-function submitAll() {
-  document.getElementById('surveyModal').classList.remove('active');
-  const humanText = buildText();
-  const csvText   = buildCsvText();
-  const fullBody  = humanText + '\n\n\n--- CSV形式（システム取込用） ---\n' + csvText;
-  const subject = encodeURIComponent(`【アイデア提案】${getVal('q2')}（${getVal('q1')}）`);
-  const body    = encodeURIComponent(fullBody);
-  formCompleted = true;
-  sendLog('completed', currentStep);
-  window.location.href = `mailto:${MAIL_TO}?subject=${subject}&body=${body}`;
-  showThankModal();
-  startCloseCountdown(3);
-}
+
 function skipSurveyAndSend() {
   document.getElementById('surveyModal').classList.remove('active');
   sendMail();
