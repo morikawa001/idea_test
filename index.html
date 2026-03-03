@@ -790,7 +790,7 @@ button:active { transform: scale(0.97); }
       📧 返信先：<span class="reply-email" id="thank-reply-email"></span>
     </div>
         <p id="close-countdown-wrap" style="font-size:0.82em; color:#888; margin-bottom:12px;">
-      <span id="close-countdown">3</span> 秒後に自動的に閉じます
+      <span id="close-countdown">10</span> 秒後に自動的に閉じます
     </p>
     <div class="thank-btn-row">
       <button class="btn-new-idea" onclick="startNewIdea()">💡 新しいアイデアを提案する</button>
@@ -1260,8 +1260,27 @@ function sendMail() {
   formCompleted = true;
   sendLog('completed', currentStep);
   window.location.href = `mailto:${MAIL_TO}?subject=${subject}&body=${body}`;
-  closePreviewModal();
+}
+
+function submitAll() {
+  // アンケート必須バリデーション（SQ1〜SQ5はラジオ、SQ3はチェックボックス）
+  const missing = [];
+  ['sq1','sq2','sq4','sq5'].forEach(name => {
+    if (!document.querySelector(`input[name="${name}"]:checked`)) {
+      missing.push(name.toUpperCase());
+    }
+  });
+  if (document.querySelectorAll('input[name="sq3"]:checked').length === 0) {
+    missing.push('SQ3');
+  }
+  if (missing.length > 0) {
+    alert('以下の項目を入力してください：\n' + missing.join(', '));
+    return;
+  }
+  document.getElementById('surveyModal').classList.remove('active');
+  sendMail();
   showThankModal();
+  startCloseCountdown(10);
 }
 
 // ============================================================
