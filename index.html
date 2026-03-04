@@ -778,14 +778,14 @@ button:active { transform: scale(0.97); }
       <textarea id="sq6" rows="3" placeholder="自由にご記入ください" style="min-height:80px;"></textarea>
     </div>
 
-    <!-- SUS（甘利ら 2025 日本語版最終版 参照・「システム」→「フォーム」に変更） -->
-<p style="font-size:0.82em; color:#666; background:#f4fbf7; border-left:3px solid #4caf88;
-   padding:8px 12px; border-radius:4px; margin-bottom:16px; line-height:1.7;">
-  ※ System Usability Scale 日本語版（甘利ら, 2025）を参照し、「システム」を「フォーム」に変更して使用しています。<br>
-  1（まったくそう思わない）〜 5（強くそう思う）の5段階でお答えください。
-</p>
-
-<div class="q-block">
+    <!-- SUS（システムユーザビリティスケール）日本語版 -->
+    <div class="sus-section">
+      <div class="sus-section-title">📊 SUS（システムユーザビリティスケール）</div>
+      <p class="sus-section-desc">
+        以下の10項目は、フォームの使いやすさを測定する標準的な評価尺度です（Brooke, 1996; 渡邉ら, 2025）。<br>
+        <strong>このフォーム全体</strong>に対する印象をお答えください。1（まったくそう思わない）〜 5（強くそう思う）
+      </p>
+     <div class="q-block">
   <label class="q-label">SUS1. この「フォーム」は頻繁に利用したいと思う</label>
   <div class="radio-group sus-row" id="sus1">
     <label><input type="radio" name="sus1" value="5" onchange="highlightSelected('sus1')"> 5：強くそう思う</label>
@@ -897,8 +897,7 @@ button:active { transform: scale(0.97); }
     <label><input type="radio" name="sus10" value="2" onchange="highlightSelected('sus10')"> 2：あまりそう思わない</label>
     <label><input type="radio" name="sus10" value="1" onchange="highlightSelected('sus10')"> 1：まったくそう思わない</label>
   </div>
-</div>
-    
+      </div>
     </div><!-- /sus-section -->
 
     <div class="modal-btn-row">
