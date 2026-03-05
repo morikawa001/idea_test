@@ -1046,7 +1046,7 @@ function goNext(step) {
     alert('⚠️ 以下の必須項目を確認してください：\n\n' + errs.join('\n'));
     return;
   }
-  sendLog('step_moved', step + 1);
+  sendLog('step_moved', step);  // ← step のまま（現在いたステップ番号）
   showStep(step + 1);
 }
 function goPrev(step) { showStep(step - 1); }
