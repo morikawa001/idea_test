@@ -1643,8 +1643,10 @@ function showSurveyFromPreview() {
 function skipSurveyAndSend() {
   document.getElementById('surveyModal').classList.remove('active');
   sendMail();
+  showThankModal();
+  startCloseCountdown(30);  // 30秒に設定
 }
-
+  
 </script>
 </body>
 </html>
