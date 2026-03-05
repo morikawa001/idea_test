@@ -1408,14 +1408,13 @@ function buildCsvText() {
 function sendMail() {
   const humanText = buildText();
   const csvText   = buildCsvText();
-  const fullBody  = humanText + '\n\n\n--- CSV形式（システム取込用） ---\n' + csvText;
-  const subject = encodeURIComponent(`【アイデア提案】${getVal('q2')}（${getVal('q1')}）`);
-  const body    = encodeURIComponent(fullBody);
-  formCompleted = true;
-  sendLog('completed', currentStep + 1);
-  window.location.href = `mailto:${MAIL_TO}?subject=${subject}&body=${body}`;
+  const fullBody  = humanText + '\n\n--- CSV ---\n' + csvText;
+  const subject   = encodeURIComponent(...);
+  const body      = encodeURIComponent(fullBody);
+  sendLog('survey_completed', 6);             // ← アンケート＋送信完了をstep6で記録
+  window.location.href = `mailto:${MAILTO}?subject=${subject}&body=${body}`;
 }
-
+  
 function submitAll() {
   // アンケート必須バリデーション（SQ1〜SQ5はラジオ、SQ3はチェックボックス）
   const missing = [];
@@ -1637,6 +1636,8 @@ function getSurveyChecks(name) {
 }
 function showSurveyFromPreview() {
   closePreviewModal();
+  sendLog('completed', 5);          // ← step5完了をここで記録
+  formCompleted = true;             // ← 離脱検知を抑制
   document.getElementById('surveyModal').classList.add('active');
 }
 
