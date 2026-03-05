@@ -938,6 +938,12 @@ button:active { transform: scale(0.97); }
 // ============================================================
 const MAIL_TO = 'ns.morizo@gmail.com';
 let startTime = null;
+  ['sq1','sq2','sq4','sq5'].forEach(n => document.querySelectorAll(`input[name="${n}"]`).forEach(r => r.checked = false));
+  document.querySelectorAll('input[name="sq3"]').forEach(r => r.checked = false);
+  for (let i = 1; i <= 10; i++) document.querySelectorAll(`input[name="sus${i}"]`).forEach(r => r.checked = false);
+  const sq6el = document.getElementById('sq6'); if (sq6el) sq6el.value = '';
+  document.querySelectorAll('#surveyModal .radio-group label, #surveyModal .check-group label').forEach(l => l.classList.remove('selected'));
+
 const NAME_NG_WORDS = ['匿名', '無記名', 'anonymous', 'anon', '名無し', 'なし', 'ない', 'none', 'no name'];
 
 // ============================================================
@@ -1034,17 +1040,15 @@ const STEP_REQUIRED = [
   }
 ];
 
-// 修正後（正しい）
 function goNext(step) {
   const errs = STEP_REQUIRED[step]();
   if (errs.length > 0) {
     alert('⚠️ 以下の必須項目を確認してください：\n\n' + errs.join('\n'));
     return;
   }
-  sendLog('step_moved', step + 2);
+  sendLog('step_moved', step + 1);
   showStep(step + 1);
 }
-
 function goPrev(step) { showStep(step - 1); }
 
 // ============================================================
@@ -1271,9 +1275,9 @@ function buildText() {
     '　医療をよくするアイデア提案フォーム　',
     '━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
     '',
-    '【研究参加同意】',
-    `私、${getVal('q2') || '（氏名未記入）'}は、本研究の目的を理解し、参加に同意します。`,
-    '',
+　　'【研究参加同意】',
+　　`私、${getVal('q2') || '（氏名未記入）'}は、本研究の目的を理解し、参加に同意します。`,
+　　'',
     '【基本情報】',
     `所属部署　　　：${getVal('q1') || '（未選択）'}`,
     `氏　　名　　　：${getVal('q2') || '（未記入）'}`,
@@ -1404,13 +1408,14 @@ function buildCsvText() {
 function sendMail() {
   const humanText = buildText();
   const csvText   = buildCsvText();
-  const fullBody  = humanText + '\n\n--- CSV ---\n' + csvText;
-  const subject   = encodeURIComponent(...);
-  const body      = encodeURIComponent(fullBody);
-  sendLog('survey_completed', 6);             // ← アンケート＋送信完了をstep6で記録
-  window.location.href = `mailto:${MAILTO}?subject=${subject}&body=${body}`;
+  const fullBody  = humanText + '\n\n\n--- CSV形式（システム取込用） ---\n' + csvText;
+  const subject = encodeURIComponent(`【アイデア提案】${getVal('q2')}（${getVal('q1')}）`);
+  const body    = encodeURIComponent(fullBody);
+  formCompleted = true;
+  sendLog('completed', currentStep);
+  window.location.href = `mailto:${MAIL_TO}?subject=${subject}&body=${body}`;
 }
-  
+
 function submitAll() {
   // アンケート必須バリデーション（SQ1〜SQ5はラジオ、SQ3はチェックボックス）
   const missing = [];
@@ -1546,7 +1551,7 @@ function resetForm() {
 //  終了画面
 // ============================================================
 function showEndScreen() {
-  if (!formCompleted) sendLog('abandoned_endbtn', currentStep + 1);
+  if (!formCompleted) sendLog('abandoned_end_btn', currentStep);
   hideFormUI();
   document.getElementById('endScreen').classList.add('active');
   window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -1582,11 +1587,11 @@ function sendLog(status, step) {
   }).catch(function() {});
 }
 
-sendLog('form_opened', 1);
+sendLog('form_opened', 0);
 
 document.addEventListener('visibilitychange', function() {
   if (document.visibilityState === 'hidden' && !formCompleted) {
-    sendLog('abandoned', currentStep + 1);
+    sendLog('abandoned', currentStep);
   }
 });
 
@@ -1632,8 +1637,6 @@ function getSurveyChecks(name) {
 }
 function showSurveyFromPreview() {
   closePreviewModal();
-  sendLog('completed', 5);          // ← step5完了をここで記録
-  formCompleted = true;             // ← 離脱検知を抑制
   document.getElementById('surveyModal').classList.add('active');
 }
 
