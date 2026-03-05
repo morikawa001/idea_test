@@ -923,7 +923,7 @@ button:active { transform: scale(0.97); }
       📧 返信先：<span class="reply-email" id="thank-reply-email"></span>
     </div>
         <p id="close-countdown-wrap" style="font-size:0.82em; color:#888; margin-bottom:12px;">
-      <span id="close-countdown">10</span> 秒後に自動的に閉じます
+      <span id="close-countdown">30</span> 秒後に自動的に閉じます
     </p>
     <div class="thank-btn-row">
       <button class="btn-new-idea" onclick="startNewIdea()">💡 新しいアイデアを提案する</button>
@@ -1434,7 +1434,7 @@ function submitAll() {
   document.getElementById('surveyModal').classList.remove('active');
   sendMail();
   showThankModal();
-  startCloseCountdown(10);
+  startCloseCountdown(30);
 }
 
 // ============================================================
