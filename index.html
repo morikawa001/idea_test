@@ -1040,15 +1040,17 @@ const STEP_REQUIRED = [
   }
 ];
 
+// 修正後（正しい）
 function goNext(step) {
   const errs = STEP_REQUIRED[step]();
   if (errs.length > 0) {
     alert('⚠️ 以下の必須項目を確認してください：\n\n' + errs.join('\n'));
     return;
   }
-  sendLog('step_moved', step + 2);  // ← 現在ステップ(0始まり) + 2 = 1始まりの次ステップ
+  sendLog('step_moved', step + 2);
   showStep(step + 1);
 }
+
 function goPrev(step) { showStep(step - 1); }
 
 // ============================================================
