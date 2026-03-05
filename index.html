@@ -1046,7 +1046,7 @@ function goNext(step) {
     alert('⚠️ 以下の必須項目を確認してください：\n\n' + errs.join('\n'));
     return;
   }
-  sendLog('step_moved', step);  // ← step のまま（現在いたステップ番号）
+  sendLog('step_moved', step + 2);  // ← 現在ステップ(0始まり) + 2 = 1始まりの次ステップ
   showStep(step + 1);
 }
 function goPrev(step) { showStep(step - 1); }
@@ -1412,7 +1412,7 @@ function sendMail() {
   const subject = encodeURIComponent(`【アイデア提案】${getVal('q2')}（${getVal('q1')}）`);
   const body    = encodeURIComponent(fullBody);
   formCompleted = true;
-  sendLog('completed', currentStep);
+  sendLog('completed', currentStep + 1);
   window.location.href = `mailto:${MAIL_TO}?subject=${subject}&body=${body}`;
 }
 
@@ -1551,7 +1551,7 @@ function resetForm() {
 //  終了画面
 // ============================================================
 function showEndScreen() {
-  if (!formCompleted) sendLog('abandoned_end_btn', currentStep);
+  if (!formCompleted) sendLog('abandoned_endbtn', currentStep + 1);
   hideFormUI();
   document.getElementById('endScreen').classList.add('active');
   window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -1587,11 +1587,11 @@ function sendLog(status, step) {
   }).catch(function() {});
 }
 
-sendLog('form_opened', 0);
+sendLog('form_opened', 1);
 
 document.addEventListener('visibilitychange', function() {
   if (document.visibilityState === 'hidden' && !formCompleted) {
-    sendLog('abandoned', currentStep);
+    sendLog('abandoned', currentStep + 1);
   }
 });
 
