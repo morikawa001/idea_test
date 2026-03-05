@@ -938,12 +938,6 @@ button:active { transform: scale(0.97); }
 // ============================================================
 const MAIL_TO = 'ns.morizo@gmail.com';
 let startTime = null;
-  ['sq1','sq2','sq4','sq5'].forEach(n => document.querySelectorAll(`input[name="${n}"]`).forEach(r => r.checked = false));
-  document.querySelectorAll('input[name="sq3"]').forEach(r => r.checked = false);
-  for (let i = 1; i <= 10; i++) document.querySelectorAll(`input[name="sus${i}"]`).forEach(r => r.checked = false);
-  const sq6el = document.getElementById('sq6'); if (sq6el) sq6el.value = '';
-  document.querySelectorAll('#surveyModal .radio-group label, #surveyModal .check-group label').forEach(l => l.classList.remove('selected'));
-
 const NAME_NG_WORDS = ['匿名', '無記名', 'anonymous', 'anon', '名無し', 'なし', 'ない', 'none', 'no name'];
 
 // ============================================================
