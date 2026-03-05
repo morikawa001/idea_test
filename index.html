@@ -1432,6 +1432,7 @@ function submitAll() {
     return;
   }
   document.getElementById('surveyModal').classList.remove('active');
+  sendLog('survey_completed', 6);  // ← この1行を追加
   sendMail();
   showThankModal();
   startCloseCountdown(30);
@@ -1642,6 +1643,8 @@ function showSurveyFromPreview() {
 
 function skipSurveyAndSend() {
   document.getElementById('surveyModal').classList.remove('active');
+  sendLog('survey_skipped', 6);  // ← この1行を追加
+  formCompleted = true;           // ← この1行を追加
   sendMail();
   showThankModal();
   startCloseCountdown(30);  // 30秒に設定
