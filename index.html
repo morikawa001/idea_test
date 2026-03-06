@@ -902,7 +902,6 @@ button:active { transform: scale(0.97); }
 
     <div class="modal-btn-row">
       <button class="btn-mail" onclick="submitAll()">✉️ アイデアとアンケートを送信する</button>
-      <button class="btn-close" onclick="skipSurveyAndSend()">スキップして送信</button>
     </div>
   </div>
 </div>
@@ -1640,14 +1639,6 @@ function showSurveyFromPreview() {
   sendLog('completed', 5);   // ← 追加：step5完了を記録
   formCompleted = true;       // ← 追加：離脱検知を抑制
   document.getElementById('surveyModal').classList.add('active');
-}
-function skipSurveyAndSend() {
-  document.getElementById('surveyModal').classList.remove('active');
-  sendLog('survey_skipped', 6);  // ← この1行を追加
-  formCompleted = true;           // ← この1行を追加
-  sendMail();
-  showThankModal();
-  startCloseCountdown(30);  // 30秒に設定
 }
   
 </script>
