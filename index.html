@@ -721,7 +721,7 @@ button:active { transform: scale(0.97); }
     <h2>📋 簡単なアンケートにご協力ください</h2>
     <p style="font-size:0.85em;color:#666;margin-bottom:18px;">
       アイデアのご提案ありがとうございました。<br>
-      フォームについて6問だけお答えください（約1分）。回答後に送信されます。
+      フォームについて6問だけお答えください（約1〜2分）。回答後に送信されます。
     </p>
     <div class="q-block">
       <label class="q-label">SQ1. フォームは使いやすかったですか</label>
@@ -734,7 +734,7 @@ button:active { transform: scale(0.97); }
       </div>
     </div>
     <div class="q-block">
-      <label class="q-label">SQ2. フォームへの入力が、アイデアを整理・具体化するのに役立ちましたか</label>
+      <label class="q-label">SQ2. このフォームを使うことで、アイデアを整理・具体化するのに役立ちましたか</label>
       <div class="radio-group" id="sq2">
         <label><input type="radio" name="sq2" value="5" onchange="highlightSelected('sq2')"> 5：とてもそう思う</label>
         <label><input type="radio" name="sq2" value="4" onchange="highlightSelected('sq2')"> 4：ややそう思う</label>
@@ -764,7 +764,7 @@ button:active { transform: scale(0.97); }
       </div>
     </div>
     <div class="q-block">
-      <label class="q-label">SQ5. 次にアイデアが浮かんだときも、このフォームを使いたいですか</label>
+      <label class="q-label">SQ5. このフォームを使うことで、アイデアを提案しようという意欲が高まりましたか</label>
       <div class="radio-group" id="sq5">
         <label><input type="radio" name="sq5" value="5" onchange="highlightSelected('sq5')"> 5：とてもそう思う</label>
         <label><input type="radio" name="sq5" value="4" onchange="highlightSelected('sq5')"> 4：ややそう思う</label>
@@ -774,8 +774,18 @@ button:active { transform: scale(0.97); }
       </div>
     </div>
     <div class="q-block">
-      <label class="q-label">SQ6. フォームについて改善してほしい点があれば教えてください</label>
-      <textarea id="sq6" rows="3" placeholder="自由にご記入ください" style="min-height:80px;"></textarea>
+      <label class="q-label">SQ6. PICOの枠に沿ってアイデアを書き進める中で、自分の考えをうまくまとめられたと感じましたか</label>
+      <div class="radio-group" id="sq6_scale">
+        <label><input type="radio" name="sq6_scale" value="5" onchange="highlightSelected('sq6_scale')"> 5：強くそう思う</label>
+        <label><input type="radio" name="sq6_scale" value="4" onchange="highlightSelected('sq6_scale')"> 4：ややそう思う</label>
+        <label><input type="radio" name="sq6_scale" value="3" onchange="highlightSelected('sq6_scale')"> 3：どちらともいえない</label>
+        <label><input type="radio" name="sq6_scale" value="2" onchange="highlightSelected('sq6_scale')"> 2：あまりそう思わない</label>
+        <label><input type="radio" name="sq6_scale" value="1" onchange="highlightSelected('sq6_scale')"> 1：全くそう思わない</label>
+      </div>
+      <div style="margin-top:14px;">
+        <label class="q-label" style="font-weight:normal; color:#555;">📝 フォームについて改善してほしい点があれば教えてください（任意）</label>
+        <textarea id="sq6" rows="3" placeholder="自由にご記入ください" style="min-height:80px;"></textarea>
+      </div>
     </div>
 
     <!-- SUS（システムユーザビリティスケール）日本語版 -->
@@ -937,7 +947,7 @@ button:active { transform: scale(0.97); }
 // ============================================================
 const MAIL_TO = 'ns.morizo@gmail.com';
 let startTime = null;
-  ['sq1','sq2','sq4','sq5'].forEach(n => document.querySelectorAll(`input[name="${n}"]`).forEach(r => r.checked = false));
+  ['sq1','sq2','sq4','sq5','sq6_scale'].forEach(n => document.querySelectorAll(`input[name="${n}"]`).forEach(r => r.checked = false));
   document.querySelectorAll('input[name="sq3"]').forEach(r => r.checked = false);
   for (let i = 1; i <= 10; i++) document.querySelectorAll(`input[name="sus${i}"]`).forEach(r => r.checked = false);
   const sq6el = document.getElementById('sq6'); if (sq6el) sq6el.value = '';
@@ -1318,8 +1328,9 @@ function buildText() {
       `SQ2．整理・具体化への貢献：${getSurveyRadio('sq2')}`,
       `SQ3．役立った部分　　　　：${getSurveyChecks('sq3')}`,
       `SQ4．入力の手間　　　　　：${getSurveyRadio('sq4')}`,
-      `SQ5．継続使用意向　　　　：${getSurveyRadio('sq5')}`,
-      `SQ6．改善点　　　　　　　：${getVal('sq6') || '（記入なし）'}`,
+      `SQ5．意欲（動機）　　　　：${getSurveyRadio('sq5')}`,
+      `SQ6．自己効力感　　　　　：${getSurveyRadio('sq6_scale')}`,
+      `SQ6．改善点（自由記述）　：${getVal('sq6') || '（記入なし）'}`,
       '',
       '━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
       '　SUS（システムユーザビリティスケール）　',
@@ -1392,7 +1403,8 @@ function buildCsvText() {
   addRow('sq2_structuring',  getSurveyRadio('sq2'));
   addRow('sq3_helpful',      getSurveyChecks('sq3'));
   addRow('sq4_effort',       getSurveyRadio('sq4'));
-  addRow('sq5_reuse',        getSurveyRadio('sq5'));
+  addRow('sq5_motivation',   getSurveyRadio('sq5'));
+  addRow('sq6_self_efficacy', getSurveyRadio('sq6_scale'));
   addRow('sq6_improvement',  getVal('sq6'));
   for (let i = 1; i <= 10; i++) addRow(`sus${i}`, getSurveyRadio(`sus${i}`));
   const susScore = calculateSusScore();
@@ -1417,9 +1429,9 @@ function sendMail() {
 function submitAll() {
   // アンケート必須バリデーション（SQ1〜SQ5はラジオ、SQ3はチェックボックス）
   const missing = [];
-  ['sq1','sq2','sq4','sq5'].forEach(name => {
+  ['sq1','sq2','sq4','sq5','sq6_scale'].forEach(name => {
     if (!document.querySelector(`input[name="${name}"]:checked`)) {
-      missing.push(name.toUpperCase());
+      missing.push(name === 'sq6_scale' ? 'SQ6（自己効力感）' : name.toUpperCase());
     }
   });
   if (document.querySelectorAll('input[name="sq3"]:checked').length === 0) {
