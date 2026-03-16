@@ -8,7 +8,7 @@ body {
 }
 .container { max-width: 720px; margin: 0 auto; }
 
-/* ===== ヘッダー type A ===== */
+/* ===== ヘッダー ===== */
 .header {
   background: linear-gradient(135deg, #2d7a5f, #4caf88);
   color: white;
@@ -124,7 +124,6 @@ body {
   from { opacity: 0; transform: translateY(18px); }
   to   { opacity: 1; transform: translateY(0); }
 }
-
 .block-title {
   font-size: 1.05em; font-weight: bold;
   color: #2d7a5f; margin-bottom: 20px;
@@ -148,553 +147,264 @@ body {
 
 /* ===== フィードバック ===== */
 .feedback-box {
-  margin-top: 8px; padding添付ファイル全体を「index.html」「main.css」「main.js」に分割した形のコード例です。[file:1]
+  margin-top: 8px; padding: 8px 12px;
+  border-radius: 6px; font-size: 0.82em;
+  line-height: 1.5; min-height: 0;
+  transition: all 0.3s; display: none;
+}
+.feedback-box.show { display: block; }
+.feedback-good    { background: #edf7f2; color: #2d7a5f; border-left: 3px solid #4caf88; }
+.feedback-neutral { background: #fef9e7; color: #9a7d0a; border-left: 3px solid #f0c040; }
+.feedback-tip     { background: #e8f5f0; color: #2d7a5f; border-left: 3px solid #82d4a8; }
 
-必要に応じてファイル名は変えてください。
+/* ===== フォーム部品 ===== */
+select, input[type="text"], textarea {
+  width: 100%; padding: 10px 13px;
+  border: 1.5px solid #c5d9cc; border-radius: 7px;
+  font-size: 0.92em; font-family: inherit;
+  background: #fdfefe; transition: border 0.2s, box-shadow 0.2s;
+}
+select:focus, input:focus, textarea:focus {
+  outline: none; border-color: #4caf88;
+  background: #edf7f2; box-shadow: 0 0 0 3px rgba(76,175,136,0.15);
+}
+textarea { resize: vertical; min-height: 80px; }
 
----
+/* ===== ラジオ・チェック ===== */
+.radio-group, .check-group {
+  display: flex; flex-direction: column; gap: 8px;
+}
+.radio-group label, .check-group label {
+  display: flex; align-items: flex-start; gap: 10px;
+  font-size: 0.90em; cursor: pointer;
+  padding: 9px 14px;
+  border: 1.5px solid #d4eddf; border-radius: 8px;
+  transition: all 0.2s; background: #fdfefe;
+}
+.radio-group label:hover, .check-group label:hover {
+  background: #edf7f2; border-color: #a8d8bb;
+}
+.radio-group label.selected, .check-group label.selected {
+  background: #edf7f2; border-color: #4caf88;
+  box-shadow: 0 0 0 2px rgba(76,175,136,0.18);
+}
+.radio-group input, .check-group input {
+  margin-top: 2px; accent-color: #4caf88; flex-shrink: 0;
+}
 
-## index.html
+/* ===== その他テキスト ===== */
+.other-input-wrap {
+  display: none;
+  margin-top: 8px;
+  padding: 10px 14px;
+  background: #f4fbf7;
+  border-radius: 6px;
+  border: 1.5px dashed #a8d8bb;
+  animation: fadeSlideIn 0.3s ease;
+}
+.other-input-wrap.show { display: block; }
+.other-input-wrap textarea { min-height: 60px; background: white; }
 
-```html
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MIT:医療をよくするアイデア＆お困りごと提案フォーム</title>
-  <link rel="stylesheet" href="main.css">
-</head>
-<body>
-<div class="container">
-  <div class="header">
-    <h1>
-      MIT: Medical Innovation Triage<br>
-      医療をよくするアイデア＆お困りごと提案フォーム
-    </h1>
-    <p>日々の業務の中で感じている「ちょっとした不便」や「こうなったらいいのに」というアイデアをお寄せください。</p>
-    <div class="header-sub">
-      ※本フォームは、医療機器開発アイデアの「たたき台」を気軽に共有していただくための仕組みです。<br>
-      専門的な内容でなくても構いません。思いついたタイミングで、短時間で入力いただけます。
-    </div>
-  </div>
+/* ===== ボタン ===== */
+.nav-btn-row {
+  display: flex; gap: 12px;
+  justify-content: space-between;
+  margin-top: 28px; flex-wrap: wrap;
+}
+.btn-prev    { background: #dce5df; color: #5a6b5e; }
+.btn-next    { background: #4caf88; color: white; flex: 1; }
+.btn-preview { background: #2d7a5f; color: white; flex: 1; }
+.btn-reset   { background: #b2c5ba; color: white; }
+.btn-finish  { background: #2d7a5f; color: white; }
+button {
+  padding: 12px 22px; border: none; border-radius: 8px;
+  font-size: 0.95em; font-weight: bold; cursor: pointer;
+  font-family: inherit; transition: opacity 0.2s, transform 0.1s;
+}
+button:hover  { opacity: 0.88; }
+button:active { transform: scale(0.97); }
 
-  <!-- ステッパー -->
-  <div class="stepper" id="stepper">
-    <div class="step-dot">
-      <div class="step-circle active" id="sc0">1</div>
-      <div class="step-label active" id="sl0">基本情報</div>
-    </div>
-    <div class="step-line" id="line0"></div>
-    <div class="step-dot">
-      <div class="step-circle" id="sc1">2</div>
-      <div class="step-label" id="sl1">困りごと</div>
-    </div>
-    <div class="step-line" id="line1"></div>
-    <div class="step-dot">
-      <div class="step-circle" id="sc2">3</div>
-      <div class="step-label" id="sl2">今の対応</div>
-    </div>
-    <div class="step-line" id="line2"></div>
-    <div class="step-dot">
-      <div class="step-circle" id="sc3">4</div>
-      <div class="step-label" id="sl3">アイデア</div>
-    </div>
-    <div class="step-line" id="line3"></div>
-    <div class="step-dot">
-      <div class="step-circle" id="sc4">5</div>
-      <div class="step-label" id="sl4">期待効果</div>
-    </div>
-  </div>
+/* ===== アニメーション ===== */
+.check-anim {
+  display: inline-block;
+  animation: popIn 0.4s cubic-bezier(0.175,0.885,0.32,1.275);
+}
+@keyframes popIn {
+  0%   { transform: scale(0); opacity: 0; }
+  80%  { transform: scale(1.3); }
+  100% { transform: scale(1); opacity: 1; }
+}
 
-  <!-- プログレスバー -->
-  <div class="progress-bar-wrap" id="progressWrap">
-    <span id="progress-label">0 / 14 項目入力済み</span>
-    <div class="progress-bar-bg">
-      <div class="progress-bar-fill" id="progressFill"></div>
-    </div>
-  </div>
+/* ===== モーダル共通 ===== */
+.modal-overlay {
+  display: none; position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.50); z-index: 1000;
+  align-items: center; justify-content: center;
+}
+.modal-overlay.active { display: flex; }
+.modal {
+  background: white; border-radius: 14px;
+  padding: 28px; max-width: 640px; width: 94%;
+  max-height: 88vh; overflow-y: auto;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.18);
+  animation: fadeSlideIn 0.35s ease;
+}
+.modal h2 { color: #2d7a5f; margin-bottom: 12px; font-size: 1.1em; }
+.modal pre {
+  background: #f4f8f6; padding: 14px; border-radius: 8px;
+  font-size: 0.81em; white-space: pre-wrap; line-height: 1.75;
+  font-family: 'Courier New', monospace; border: 1px solid #d4eddf;
+}
+.modal-btn-row { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+.btn-mail  { background: #4caf88; color: white; }
+.btn-close { background: #b2c5ba; color: white; }
 
-  <!-- ナビゲーター -->
-  <div class="navigator" id="navigator">
-    <div class="nav-avatar">🌱</div>
-    <div class="nav-bubble" id="navBubble">
-      こんにちは！現場のアイデアやお困りごとを教えてください。<br>
-      まず、<strong>あなたの基本情報</strong>から始めましょう。気軽に入力してください😊
-    </div>
-  </div>
+/* ===== 感謝モーダル ===== */
+.thank-modal-overlay {
+  display: none; position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.55); z-index: 2000;
+  align-items: center; justify-content: center;
+}
+.thank-modal-overlay.active { display: flex; }
+.thank-modal {
+  background: white; border-radius: 20px;
+  padding: 44px 36px; max-width: 440px; width: 92%;
+  text-align: center;
+  box-shadow: 0 12px 48px rgba(0,0,0,0.20);
+  animation: thankPop 0.5s cubic-bezier(0.175,0.885,0.32,1.275);
+}
+@keyframes thankPop {
+  0%   { opacity: 0; transform: scale(0.7); }
+  80%  { transform: scale(1.04); }
+  100% { opacity: 1; transform: scale(1); }
+}
+.thank-icon {
+  font-size: 4em; margin-bottom: 16px;
+  animation: iconBounce 0.6s 0.3s cubic-bezier(0.175,0.885,0.32,1.275) both;
+}
+@keyframes iconBounce {
+  0%   { transform: scale(0) rotate(-20deg); opacity: 0; }
+  80%  { transform: scale(1.2) rotate(5deg); }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+.thank-title {
+  font-size: 1.45em; font-weight: bold;
+  color: #2d7a5f; margin-bottom: 12px;
+}
+.thank-body {
+  font-size: 0.92em; color: #555;
+  line-height: 1.9; margin-bottom: 16px;
+}
+.thank-body strong { color: #4caf88; }
+.thank-reply-box {
+  background: #edf7f2;
+  border-left: 4px solid #4caf88;
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin: 0 0 24px;
+  font-size: 0.88em;
+  color: #2d7a5f;
+  text-align: left;
+  line-height: 1.7;
+}
+.thank-reply-box .reply-email {
+  font-weight: bold;
+  word-break: break-all;
+  color: #1a5c40;
+}
+.thank-btn-row { display: flex; flex-direction: column; gap: 10px; }
+.btn-new-idea {
+  background: linear-gradient(135deg, #2d7a5f, #4caf88);
+  color: white; padding: 13px 20px;
+  border: none; border-radius: 10px;
+  font-size: 0.95em; font-weight: bold;
+  cursor: pointer; font-family: inherit;
+  transition: opacity 0.2s, transform 0.1s;
+}
+.btn-new-idea:hover  { opacity: 0.88; }
+.btn-new-idea:active { transform: scale(0.97); }
+.btn-just-close {
+  background: #ecf0f1; color: #777;
+  padding: 10px 20px;
+  border: none; border-radius: 10px;
+  font-size: 0.88em; cursor: pointer; font-family: inherit;
+  transition: opacity 0.2s;
+}
+.btn-just-close:hover { opacity: 0.75; }
 
-  <form id="ideaForm" novalidate>
+/* ===== アンケートモーダル ===== */
+.survey-modal-overlay {
+  display: none; position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.50); z-index: 1500;
+  align-items: center; justify-content: center;
+}
+.survey-modal-overlay.active { display: flex; }
+.survey-modal {
+  background: white; border-radius: 14px;
+  padding: 28px; max-width: 640px; width: 94%;
+  max-height: 88vh; overflow-y: auto;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.18);
+  animation: fadeSlideIn 0.35s ease;
+}
+.survey-modal h2 { color: #2d7a5f; margin-bottom: 8px; font-size: 1.1em; }
 
-    <!-- ステップ1：基本情報 -->
-    <div class="block active" id="step0">
-      <div class="block-title">📋 第1ステップ：基本情報</div>
-      <div class="q-block">
-        <label class="q-label">Q1. 所属部署 <span class="req">★必須</span></label>
-        <select id="q1" required onchange="onSelectChange('q1')">
-          <option value="">-- 選択してください --</option>
-          <option>医局</option><option>GICU</option><option>手術室</option><option>外来</option>
-          <option>病棟</option><option>リハビリテーション科</option><option>薬剤部</option>
-          <option>放射線科</option><option>臨床検査部</option>
-          <option>医療情報・システム部門</option><option>臨床研究支援センター</option>
-          <option>事務部門</option><option>その他</option>
-        </select>
-        <div class="feedback-box feedback-good" id="fb-q1"></div>
-      </div>
-      <div class="q-block">
-        <label class="q-label">Q2. 氏名 <span class="req">★必須</span></label>
-        <div class="q-hint">👤 フルネームでご記入ください（検討結果のご連絡に使用します）</div>
-        <input type="text" id="q2" placeholder="例：山田 太郎" oninput="onTextInput('q2')" required>
-        <div class="feedback-box" id="fb-q2"></div>
-      </div>
-      <div class="q-block">
-        <label class="q-label">Q2-b. 返信用メールアドレス <span class="req">★必須</span></label>
-        <div class="q-hint">📧 アイデアの検討結果をこちらのアドレスにご返信します</div>
-        <input type="text" id="q2b" placeholder="例：yamada.taro@example.com" oninput="onEmailInput('q2b')" required>
-        <div class="feedback-box" id="fb-q2b"></div>
-      </div>
-      <div class="q-block">
-        <label class="q-label">Q3. 職種 <span class="req">★必須</span></label>
-        <div class="radio-group" id="q3">
-          <label><input type="radio" name="q3" value="医師" onchange="onRadioChange('q3')"> 医師</label>
-          <label><input type="radio" name="q3" value="看護師" onchange="onRadioChange('q3')"> 看護師</label>
-          <label><input type="radio" name="q3" value="薬剤師" onchange="onRadioChange('q3')"> 薬剤師</label>
-          <label><input type="radio" name="q3" value="臨床工学技士" onchange="onRadioChange('q3')"> 臨床工学技士</label>
-          <label><input type="radio" name="q3" value="理学療法士・作業療法士" onchange="onRadioChange('q3')"> 理学療法士・作業療法士</label>
-          <label><input type="radio" name="q3" value="事務職" onchange="onRadioChange('q3')"> 事務職</label>
-          <label><input type="radio" name="q3" value="その他" onchange="onRadioChange('q3')"> その他</label>
-        </div>
-        <div class="feedback-box" id="fb-q3"></div>
-      </div>
-      <div class="nav-btn-row">
-        <button type="button" class="btn-next" onclick="goNext(0)">次へ：困りごとを教える →</button>
-      </div>
-    </div>
+/* ===== SUSセクション枠 ===== */
+.sus-section {
+  margin-top: 32px; padding: 20px 18px;
+  background: #f0f9f4; border: 2px solid #4caf88; border-radius: 10px;
+}
+.sus-section-title { font-size: 1.0em; font-weight: bold; color: #2d7a5f; margin-bottom: 6px; }
+.sus-section-desc  { font-size: 0.82em; color: #666; margin-bottom: 16px; line-height: 1.7; }
+.sus-row label { padding: 7px 12px; font-size: 0.87em; }
 
-    <!-- ステップ2：現場の困りごと -->
-    <div class="block" id="step1">
-      <div class="block-title">🔍 第2ステップ：現場の困りごと <span class="badge">P：対象・背景</span></div>
-      <div class="q-block">
-        <label class="q-label">Q4. 誰が一番困っていますか？ <span class="req">★必須</span></label>
-        <div class="q-hint">💡 一番近いものを選んでください</div>
-        <div class="radio-group" id="q4">
-          <label><input type="radio" name="q4" value="患者さん" onchange="onRadioChange('q4')"> 患者さん</label>
-          <label><input type="radio" name="q4" value="自分自身・自部署のスタッフ" onchange="onRadioChange('q4')"> 自分自身・自部署のスタッフ</label>
-          <label><input type="radio" name="q4" value="他部署のスタッフ" onchange="onRadioChange('q4')"> 他部署のスタッフ</label>
-          <label><input type="radio" name="q4" value="病院全体" onchange="onRadioChange('q4')"> 病院全体</label>
-        </div>
-        <div class="feedback-box" id="fb-q4"></div>
-      </div>
-      <div class="q-block">
-        <label class="q-label">Q5. どのくらいの頻度で起きていますか？ <span class="req">★必須</span></label>
-        <div class="radio-group" id="q5">
-          <label><input type="radio" name="q5" value="毎日複数回" onchange="onRadioChange('q5')"> 毎日複数回</label>
-          <label><input type="radio" name="q5" value="毎日1回程度" onchange="onRadioChange('q5')"> 毎日1回程度</label>
-          <label><input type="radio" name="q5" value="週に数回" onchange="onRadioChange('q5')"> 週に数回</label>
-          <label><input type="radio" name="q5" value="月に数回" onchange="onRadioChange('q5')"> 月に数回</label>
-          <label><input type="radio" name="q5" value="稀だが発生すると重大" onchange="onRadioChange('q5')"> 稀だが発生すると重大（ハイリスク）</label>
-        </div>
-        <div class="feedback-box" id="fb-q5"></div>
-      </div>
-      <div class="q-block">
-        <label class="q-label">Q6. どのような困りごとや影響がありますか？ <span class="req">★必須</span>（複数選択可）</label>
-        <div class="check-group" id="q6">
-          <label><input type="checkbox" name="q6" value="医療安全の低下（インシデントリスクなど）" onchange="onCheckChange('q6')"> 医療安全の低下（インシデントリスクなど）</label>
-          <label><input type="checkbox" name="q6" value="業務時間の圧迫（残業・無駄な転記作業など）" onchange="onCheckChange('q6')"> 業務時間の圧迫（残業・無駄な転記作業など）</label>
-          <label><input type="checkbox" name="q6" value="患者さんの苦痛・QOL低下（痛み、離床の遅れなど）" onchange="onCheckChange('q6')"> 患者さんの苦痛・QOL低下（痛み、離床の遅れなど）</label>
-          <label><input type="checkbox" name="q6" value="スタッフの身体的・精神的負担" onchange="onCheckChange('q6')"> スタッフの身体的・精神的負担</label>
-          <label><input type="checkbox" name="q6" value="物品やコストの無駄" onchange="onCheckChange('q6')"> 物品やコストの無駄</label>
-          <label><input type="checkbox" name="q6" value="その他" id="q6-other-check"
-                        onchange="onCheckChange('q6'); toggleOtherInput('q6-other-check','q6-other-wrap')"> その他</label>
-        </div>
-        <div class="other-input-wrap" id="q6-other-wrap">
-          <div class="q-hint" style="margin-bottom:6px;">📝 具体的にどのような困りごとか教えてください</div>
-          <textarea id="q6-other-text" placeholder="例：記録の転記ミスが起きやすい、情報共有に時間がかかる など" oninput="updateProgress()"></textarea>
-        </div>
-        <div class="feedback-box" id="fb-q6"></div>
-      </div>
-      <div class="q-block">
-        <label class="q-label">Q7. 具体的にどんな場面で困りますか？</label>
-        <div class="q-hint">💬 「いつ・どこで・誰が・何が起きるか」を思いつくまま書いてみてください</div>
-        <textarea id="q7" placeholder="例：術後、患者さんが複数ルートを持ったまま歩行する際、チューブが引っかかりやすい"
-                  oninput="onTextareaInput('q7')"></textarea>
-        <div class="feedback-box" id="fb-q7"></div>
-      </div>
-      <div class="nav-btn-row">
-        <button type="button" class="btn-prev" onclick="goPrev(1)">← 戻る</button>
-        <button type="button" class="btn-next" onclick="goNext(1)">次へ：今の対応を教える →</button>
-      </div>
-    </div>
+/* ===== 終了画面 ===== */
+.end-screen {
+  display: none;
+  background: white;
+  border-radius: 0 0 12px 12px;
+  padding: 56px 36px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  animation: fadeSlideIn 0.5s ease;
+}
+.end-screen.active { display: block; }
+.end-icon {
+  font-size: 4.5em;
+  margin-bottom: 20px;
+  animation: iconBounce 0.6s 0.2s cubic-bezier(0.175,0.885,0.32,1.275) both;
+}
+.end-title {
+  font-size: 1.55em; font-weight: bold;
+  color: #2d7a5f; margin-bottom: 16px;
+}
+.end-divider {
+  width: 60px; height: 3px;
+  background: linear-gradient(90deg, #4caf88, #82d4a8);
+  border-radius: 2px; margin: 0 auto 28px;
+}
+.end-body {
+  font-size: 0.95em; color: #555;
+  line-height: 2.1; margin-bottom: 36px;
+}
+.end-body strong { color: #4caf88; }
+.btn-restart {
+  background: #edf7f2; color: #2d7a5f;
+  border: 2px solid #4caf88;
+  padding: 12px 32px; border-radius: 8px;
+  font-size: 0.93em; font-weight: bold;
+  cursor: pointer; font-family: inherit;
+  transition: all 0.2s;
+}
+.btn-restart:hover  { background: #d4eddf; }
+.btn-restart:active { transform: scale(0.97); }
 
-    <!-- ステップ3：現在の対応 -->
-    <div class="block" id="step2">
-      <div class="block-title">🔄 第3ステップ：今の対応とその限界 <span class="badge">C：比較対照</span></div>
-      <div class="q-block">
-        <label class="q-label">Q8. 今はどのように工夫して対応していますか？</label>
-        <div class="q-hint">💡 「とりあえず〇〇している」という程度でも大丈夫です</div>
-        <textarea id="q8" placeholder="例：チューブをまとめてテープで留めている、スタッフが常に付き添う など"
-                  oninput="onTextareaInput('q8')"></textarea>
-        <div class="feedback-box" id="fb-q8"></div>
-      </div>
-      <div class="q-block">
-        <label class="q-label">Q9. 今のやり方で「うまくいっていない点」はありますか？（複数選択可）</label>
-        <div class="q-hint">📝 思い当たるものがあれば選んでください</div>
-        <div class="check-group" id="q9">
-          <label><input type="checkbox" name="q9" value="手作業が多くて時間がかかる" onchange="onCheckChange('q9')"> 手作業が多くて時間がかかる</label>
-          <label><input type="checkbox" name="q9" value="人によってやり方や精度にばらつきが出る" onchange="onCheckChange('q9')"> 人によってやり方や精度にばらつきが出る</label>
-          <label><input type="checkbox" name="q9" value="根本的な解決（安全確保など）になっていない" onchange="onCheckChange('q9')"> 根本的な解決（安全確保など）になっていない</label>
-          <label><input type="checkbox" name="q9" value="消耗品費などのコストがかかる" onchange="onCheckChange('q9')"> 消耗品費などのコストがかかる</label>
-          <label><input type="checkbox" name="q9" value="スタッフへの教育コストが高い" onchange="onCheckChange('q9')"> スタッフへの教育コストが高い</label>
-        </div>
-        <div class="feedback-box" id="fb-q9"></div>
-      </div>
-      <div class="nav-btn-row">
-        <button type="button" class="btn-prev" onclick="goPrev(2)">← 戻る</button>
-        <button type="button" class="btn-next" onclick="goNext(2)">次へ：アイデアを教える →</button>
-      </div>
-    </div>
-
-    <!-- ステップ4：アイデア -->
-    <div class="block" id="step3">
-      <div class="block-title">💡 第4ステップ：あなたのアイデア・ひらめき <span class="badge">I：介入</span></div>
-      <div class="q-block">
-        <label class="q-label">Q10. 「こんなものがあれば解決しそう」というアイデアを教えてください <span class="req">★必須</span></label>
-        <div class="q-hint">💭 完成したアイデアでなくて大丈夫！「なんとなくこんな感じ…」という段階でも、ぜひ聞かせてください。あなたの現場感覚が一番大切です。</div>
-        <textarea id="q10" rows="5" placeholder="思いつくまま、自由に書いてみてください。どんな小さなアイデアでも歓迎します。"
-                  oninput="onIdeaInput()" required></textarea>
-        <div class="feedback-box" id="fb-q10"></div>
-      </div>
-      <div class="q-block">
-        <label class="q-label">Q11. アイデアのカテゴリー（一番近いもの） <span class="req">★必須</span></label>
-        <div class="q-hint">⚡ 一番近いものを選んでください</div>
-        <div class="radio-group" id="q11">
-          <label><input type="radio" name="q11" value="医療機器・器具の新規開発や改良" onchange="onRadioChange('q11')"> 🔧 医療機器・器具の新規開発や改良</label>
-          <label><input type="radio" name="q11" value="アプリ・RPAによる業務自動化・電子化" onchange="onRadioChange('q11')"> 💻 アプリ・RPA（UiPathなど）による業務自動化・電子化</label>
-          <label><input type="radio" name="q11" value="既存製品の新しい使い方（転用・適応外使用など）" onchange="onRadioChange('q11')"> ♻️ 既存製品の新しい使い方（転用・適応外使用など）</label>
-          <label><input type="radio" name="q11" value="運用ルールやマニュアルの変更" onchange="onRadioChange('q11')"> 📄 運用ルールやマニュアルの変更</label>
-        </div>
-        <div class="feedback-box" id="fb-q11"></div>
-      </div>
-      <div class="nav-btn-row">
-        <button type="button" class="btn-prev" onclick="goPrev(3)">← 戻る</button>
-        <button type="button" class="btn-next" onclick="goNext(3)">次へ：期待できる効果 →</button>
-      </div>
-    </div>
-
-    <!-- ステップ5：期待される効果 -->
-    <div class="block" id="step4">
-      <div class="block-title">📊 第5ステップ：期待できる効果 <span class="badge">O：アウトカム</span></div>
-      <div class="q-block">
-        <label class="q-label">Q12. このアイデアが実現すると、何が改善しそうですか？ <span class="req">★必須</span>（複数選択可）</label>
-        <div class="check-group" id="q12">
-          <label><input type="checkbox" name="q12" value="インシデント件数の減少（医療安全の向上）" onchange="onCheckChange('q12')"> 🛡️ インシデント件数の減少（医療安全の向上）</label>
-          <label><input type="checkbox" name="q12" value="業務時間・記録時間の短縮" onchange="onCheckChange('q12')"> ⏱️ 業務時間・記録時間の短縮</label>
-          <label><input type="checkbox" name="q12" value="患者さんの回復促進（早期離床・QOL向上など）" onchange="onCheckChange('q12')"> 🏃 患者さんの回復促進（早期離床・QOL向上など）</label>
-          <label><input type="checkbox" name="q12" value="コスト削減（物品費・人件費など）" onchange="onCheckChange('q12')"> 💴 コスト削減（物品費・人件費など）</label>
-          <label><input type="checkbox" name="q12" value="スタッフの負担軽減・満足度向上" onchange="onCheckChange('q12')"> 😊 スタッフの負担軽減・満足度向上</label>
-          <label><input type="checkbox" name="q12" value="その他" id="q12-other-check"
-                        onchange="onCheckChange('q12'); toggleOtherInput('q12-other-check','q12-other-wrap')"> その他</label>
-        </div>
-        <div class="other-input-wrap" id="q12-other-wrap">
-          <div class="q-hint" style="margin-bottom:6px;">📝 どのような改善が期待できるか教えてください</div>
-          <textarea id="q12-other-text" placeholder="例：患者満足度の向上、スタッフ間のコミュニケーション改善 など" oninput="updateProgress()"></textarea>
-        </div>
-        <div class="feedback-box" id="fb-q12"></div>
-      </div>
-      <div class="q-block">
-        <label class="q-label">Q13. どのくらい良くなりそうか、わかる範囲で教えてください</label>
-        <div class="q-hint">💬 記入例：1日あたり1時間の業務削減 / インシデントが半減 / 術後離床が1日早まる など<br>数字じゃなくても「体感的に楽になる」程度で大丈夫です</div>
-        <textarea id="q13" placeholder="思いつく範囲で書いてください。数値がなくても問題ありません。"
-                  oninput="onTextareaInput('q13')"></textarea>
-        <div class="feedback-box" id="fb-q13"></div>
-      </div>
-      <div class="q-block">
-        <label class="q-label">Q14. 参考になる写真・資料があればメールに添付してください（任意）</label>
-        <div class="q-hint">📎 現在の問題の様子、参考にしたい製品画像、手書きスケッチなど（JPG・PNG・PDF対応）をメール送信時に直接添付してください。</div>
-      </div>
-      <div class="nav-btn-row">
-        <button type="button" class="btn-prev" onclick="goPrev(4)">← 戻る</button>
-        <button type="button" class="btn-preview" onclick="showPreview()">👁️ 内容を確認して送信</button>
-      </div>
-      <div style="display:flex; gap:12px; justify-content:center; margin-top:12px; flex-wrap:wrap;">
-        <button type="button" class="btn-reset"  onclick="resetForm()">🔄 最初からやり直す</button>
-        <button type="button" class="btn-finish" onclick="showEndScreen()">✅ 終了</button>
-      </div>
-    </div>
-
-  </form>
-
-  <!-- 終了画面 -->
-  <div class="end-screen" id="endScreen">
-    <div class="end-icon">🌿</div>
-    <div class="end-title">ありがとうございました</div>
-    <div class="end-divider"></div>
-    <div class="end-body">
-      現場からの小さな声が、<strong>医療をよりよくするための大切な一歩</strong>です。<br>
-      担当部署にて内容を確認し、<strong>検討結果をメールにてご連絡</strong>いたします。<br><br>
-      また気になることや新しいアイデアが浮かんだときは、<br>
-      いつでも気軽に投稿してください。💚
-    </div>
-    <button type="button" class="btn-restart" onclick="restartFromEnd()">
-      🔄 新しいアイデアを提案する
-    </button>
-  </div>
-
-</div><!-- /container -->
-
-<!-- プレビュー＆送信モーダル -->
-<div class="modal-overlay" id="previewModal">
-  <div class="modal">
-    <h2>📋 入力内容の確認</h2>
-    <p style="font-size:0.85em;color:#666;margin-bottom:12px;">以下の内容で提出します。送信方法を選んでください。</p>
-    <pre id="previewText"></pre>
-    <div id="picoBox" style="margin-top:14px; padding:14px; background:#edf7f2; border-radius:8px;
-         font-size:0.83em; line-height:1.9; border-left:4px solid #4caf88; display:none;">
-      <strong>🔬 自動まとめ：アイデア実現のためのたたき台（PICO）</strong><br>
-      <span style="font-size:0.82em;color:#555;">※ あなたの入力内容をもとに自動で整理しました。このまま研究や開発の検討に活用させていただきます。</span><br><br>
-      <span id="picoContent"></span>
-    </div>
-    <div class="modal-btn-row">
-      <button class="btn-mail"  onclick="showSurveyFromPreview()">✉️ メールで送信</button>
-      <button class="btn-close" onclick="closePreviewAndThank()">✖ 閉じる</button>
-    </div>
-  </div>
-</div>
-
-<!-- アンケートモーダル -->
-<div class="survey-modal-overlay" id="surveyModal">
-  <div class="survey-modal">
-    <h2>📋 簡単なアンケートにご協力ください</h2>
-    <p style="font-size:0.85em;color:#666;margin-bottom:18px;">
-      アイデアのご提案ありがとうございました。<br>
-      フォームについて6問だけお答えください（約1〜2分）。回答後に送信されます。
-    </p>
-
-    <div class="q-block">
-      <label class="q-label">SQ1. フォームは使いやすかったですか</label>
-      <div class="radio-group" id="sq1">
-        <label><input type="radio" name="sq1" value="5" onchange="highlightSelected('sq1')"> 5：とてもそう思う</label>
-        <label><input type="radio" name="sq1" value="4" onchange="highlightSelected('sq1')"> 4：ややそう思う</label>
-        <label><input type="radio" name="sq1" value="3" onchange="highlightSelected('sq1')"> 3：どちらともいえない</label>
-        <label><input type="radio" name="sq1" value="2" onchange="highlightSelected('sq1')"> 2：あまりそう思わない</label>
-        <label><input type="radio" name="sq1" value="1" onchange="highlightSelected('sq1')"> 1：全くそう思わない</label>
-      </div>
-    </div>
-
-    <div class="q-block">
-      <label class="q-label">SQ2. このフォームを使うことで、アイデアを整理・具体化するのに役立ちましたか</label>
-      <div class="radio-group" id="sq2">
-        <label><input type="radio" name="sq2" value="5" onchange="highlightSelected('sq2')"> 5：とてもそう思う</label>
-        <label><input type="radio" name="sq2" value="4" onchange="highlightSelected('sq2')"> 4：ややそう思う</label>
-        <label><input type="radio" name="sq2" value="3" onchange="highlightSelected('sq2')"> 3：どちらともいえない</label>
-        <label><input type="radio" name="sq2" value="2" onchange="highlightSelected('sq2')"> 2：あまりそう思わない</label>
-        <label><input type="radio" name="sq2" value="1" onchange="highlightSelected('sq2')"> 1：全くそう思わない</label>
-      </div>
-    </div>
-
-    <div class="q-block">
-      <label class="q-label">SQ3. 役立ったと感じた部分はどれですか（複数選択可）</label>
-      <div class="check-group" id="sq3">
-        <label><input type="checkbox" name="sq3" value="フォームのレイアウトや入力のしやすさ" onchange="highlightChecked('sq3')"> フォームのレイアウトや入力のしやすさ</label>
-        <label><input type="checkbox" name="sq3" value="「誰が・どのくらい困っているか」を考えるきっかけになった" onchange="highlightChecked('sq3')"> 「誰が・どのくらい困っているか」を考えるきっかけになった</label>
-        <label><input type="checkbox" name="sq3" value="「今ある工夫や限界」を振り返るきっかけになった" onchange="highlightChecked('sq3')"> 「今ある工夫や限界」を振り返るきっかけになった</label>
-        <label><input type="checkbox" name="sq3" value="「実現したらどんな効果があるか」を考えるきっかけになった" onchange="highlightChecked('sq3')"> 「実現したらどんな効果があるか」を考えるきっかけになった</label>
-        <label><input type="checkbox" name="sq3" value="特になし" onchange="highlightChecked('sq3')"> 特になし</label>
-      </div>
-    </div>
-
-    <div class="q-block">
-      <label class="q-label">SQ4. 入力に時間や手間がかかりましたか</label>
-      <div class="radio-group" id="sq4">
-        <label><input type="radio" name="sq4" value="5" onchange="highlightSelected('sq4')"> 5：とてもそう思う</label>
-        <label><input type="radio" name="sq4" value="4" onchange="highlightSelected('sq4')"> 4：ややそう思う</label>
-        <label><input type="radio" name="sq4" value="3" onchange="highlightSelected('sq4')"> 3：どちらともいえない</label>
-        <label><input type="radio" name="sq4" value="2" onchange="highlightSelected('sq4')"> 2：あまりそう思わない</label>
-        <label><input type="radio" name="sq4" value="1" onchange="highlightSelected('sq4')"> 1：全くそう思わない</label>
-      </div>
-    </div>
-
-    <div class="q-block">
-      <label class="q-label">SQ5. このフォームを使うことで、アイデアを提案しようという意欲が高まりましたか</label>
-      <div class="radio-group" id="sq5">
-        <label><input type="radio" name="sq5" value="5" onchange="highlightSelected('sq5')"> 5：とてもそう思う</label>
-        <label><input type="radio" name="sq5" value="4" onchange="highlightSelected('sq5')"> 4：ややそう思う</label>
-        <label><input type="radio" name="sq5" value="3" onchange="highlightSelected('sq5')"> 3：どちらともいえない</label>
-        <label><input type="radio" name="sq5" value="2" onchange="highlightSelected('sq5')"> 2：あまりそう思わない</label>
-        <label><input type="radio" name="sq5" value="1" onchange="highlightSelected('sq5')"> 1：全くそう思わない</label>
-      </div>
-    </div>
-
-    <div class="q-block">
-      <label class="q-label">SQ6. PICOの枠に沿ってアイデアを書き進める中で、自分の考えをうまくまとめられたと感じましたか</label>
-      <div class="radio-group" id="sq6_scale">
-        <label><input type="radio" name="sq6_scale" value="5" onchange="highlightSelected('sq6_scale')"> 5：強くそう思う</label>
-        <label><input type="radio" name="sq6_scale" value="4" onchange="highlightSelected('sq6_scale')"> 4：ややそう思う</label>
-        <label><input type="radio" name="sq6_scale" value="3" onchange="highlightSelected('sq6_scale')"> 3：どちらともいえない</label>
-        <label><input type="radio" name="sq6_scale" value="2" onchange="highlightSelected('sq6_scale')"> 2：あまりそう思わない</label>
-        <label><input type="radio" name="sq6_scale" value="1" onchange="highlightSelected('sq6_scale')"> 1：全くそう思わない</label>
-      </div>
-      <div style="margin-top:14px;">
-        <label class="q-label" style="font-weight:normal; color:#555;">📝 フォームについて改善してほしい点があれば教えてください（任意）</label>
-        <textarea id="sq6" rows="3" placeholder="自由にご記入ください" style="min-height:80px;"></textarea>
-      </div>
-    </div>
-
-    <!-- SUS セクション -->
-    <div class="sus-section">
-      <div class="sus-section-title">📊 SUS（システムユーザビリティスケール）</div>
-      <p class="sus-section-desc">
-        以下の10項目は、フォームの使いやすさを測定する標準的な評価尺度です（Brooke, 1996; 甘利ら, 2025）。<br>
-        <strong>このフォーム全体</strong>に対する印象をお答えください。1（まったくそう思わない）〜 5（強くそう思う）
-      </p>
-
-      <div class="q-block">
-        <label class="q-label">SUS1. この「フォーム」は頻繁に利用したいと思う</label>
-        <div class="radio-group sus-row" id="sus1">
-          <label><input type="radio" name="sus1" value="5" onchange="highlightSelected('sus1')"> 5：強くそう思う</label>
-          <label><input type="radio" name="sus1" value="4" onchange="highlightSelected('sus1')"> 4：ややそう思う</label>
-          <label><input type="radio" name="sus1" value="3" onchange="highlightSelected('sus1')"> 3：どちらともいえない</label>
-          <label><input type="radio" name="sus1" value="2" onchange="highlightSelected('sus1')"> 2：あまりそう思わない</label>
-          <label><input type="radio" name="sus1" value="1" onchange="highlightSelected('sus1')"> 1：まったくそう思わない</label>
-        </div>
-      </div>
-
-      <div class="q-block">
-        <label class="q-label">SUS2. この「フォーム」は必要以上に複雑だと感じた
-          <span style="font-size:0.78em; font-weight:normal; color:#888; display:block; margin-top:4px;">
-            ※「必要以上の複雑」とは、「このフォームの目的を達成するためにやむを得ないと思われる複雑さ」ということ
-          </span>
-        </label>
-        <div class="radio-group sus-row" id="sus2">
-          <label><input type="radio" name="sus2" value="5" onchange="highlightSelected('sus2')"> 5：強くそう思う</label>
-          <label><input type="radio" name="sus2" value="4" onchange="highlightSelected('sus2')"> 4：ややそう思う</label>
-          <label><input type="radio" name="sus2" value="3" onchange="highlightSelected('sus2')"> 3：どちらともいえない</label>
-          <label><input type="radio" name="sus2" value="2" onchange="highlightSelected('sus2')"> 2：あまりそう思わない</label>
-          <label><input type="radio" name="sus2" value="1" onchange="highlightSelected('sus2')"> 1：まったくそう思わない</label>
-        </div>
-      </div>
-
-      <div class="q-block">
-        <label class="q-label">SUS3. この「フォーム」は使いやすいと思った</label>
-        <div class="radio-group sus-row" id="sus3">
-          <label><input type="radio" name="sus3" value="5" onchange="highlightSelected('sus3')"> 5：強くそう思う</label>
-          <label><input type="radio" name="sus3" value="4" onchange="highlightSelected('sus3')"> 4：ややそう思う</label>
-          <label><input type="radio" name="sus3" value="3" onchange="highlightSelected('sus3')"> 3：どちらともいえない</label>
-          <label><input type="radio" name="sus3" value="2" onchange="highlightSelected('sus3')"> 2：あまりそう思わない</label>
-          <label><input type="radio" name="sus3" value="1" onchange="highlightSelected('sus3')"> 1：まったくそう思わない</label>
-        </div>
-      </div>
-
-      <div class="q-block">
-        <label class="q-label">SUS4. 私がこの「フォーム」を使えるようになるためには、技術者のサポートが必要だと思う</label>
-        <div class="radio-group sus-row" id="sus4">
-          <label><input type="radio" name="sus4" value="5" onchange="highlightSelected('sus4')"> 5：強くそう思う</label>
-          <label><input type="radio" name="sus4" value="4" onchange="highlightSelected('sus4')"> 4：ややそう思う</label>
-          <label><input type="radio" name="sus4" value="3" onchange="highlightSelected('sus4')"> 3：どちらともいえない</label>
-          <label><input type="radio" name="sus4" value="2" onchange="highlightSelected('sus4')"> 2：あまりそう思わない</label>
-          <label><input type="radio" name="sus4" value="1" onchange="highlightSelected('sus4')"> 1：まったくそう思わない</label>
-        </div>
-      </div>
-
-      <div class="q-block">
-        <label class="q-label">SUS5. この「フォーム」の様々な機能は、お互いによく連携されていると感じた</label>
-        <div class="radio-group sus-row" id="sus5">
-          <label><input type="radio" name="sus5" value="5" onchange="highlightSelected('sus5')"> 5：強くそう思う</label>
-          <label><input type="radio" name="sus5" value="4" onchange="highlightSelected('sus5')"> 4：ややそう思う</label>
-          <label><input type="radio" name="sus5" value="3" onchange="highlightSelected('sus5')"> 3：どちらともいえない</label>
-          <label><input type="radio" name="sus5" value="2" onchange="highlightSelected('sus5')"> 2：あまりそう思わない</label>
-          <label><input type="radio" name="sus5" value="1" onchange="highlightSelected('sus5')"> 1：まったくそう思わない</label>
-        </div>
-      </div>
-
-      <div class="q-block">
-        <label class="q-label">SUS6. この「フォーム」には一貫性がなさすぎると思った</label>
-        <div class="radio-group sus-row" id="sus6">
-          <label><input type="radio" name="sus6" value="5" onchange="highlightSelected('sus6')"> 5：強くそう思う</label>
-          <label><input type="radio" name="sus6" value="4" onchange="highlightSelected('sus6')"> 4：ややそう思う</label>
-          <label><input type="radio" name="sus6" value="3" onchange="highlightSelected('sus6')"> 3：どちらともいえない</label>
-          <label><input type="radio" name="sus6" value="2" onchange="highlightSelected('sus6')"> 2：あまりそう思わない</label>
-          <label><input type="radio" name="sus6" value="1" onchange="highlightSelected('sus6')"> 1：まったくそう思わない</label>
-        </div>
-      </div>
-
-      <div class="q-block">
-        <label class="q-label">SUS7. ほとんどの人はこの「フォーム」をすぐに使いこなせるようになると思う</label>
-        <div class="radio-group sus-row" id="sus7">
-          <label><input type="radio" name="sus7" value="5" onchange="highlightSelected('sus7')"> 5：強くそう思う</label>
-          <label><input type="radio" name="sus7" value="4" onchange="highlightSelected('sus7')"> 4：ややそう思う</label>
-          <label><input type="radio" name="sus7" value="3" onchange="highlightSelected('sus7')"> 3：どちらともいえない</label>
-          <label><input type="radio" name="sus7" value="2" onchange="highlightSelected('sus7')"> 2：あまりそう思わない</label>
-          <label><input type="radio" name="sus7" value="1" onchange="highlightSelected('sus7')"> 1：まったくそう思わない</label>
-        </div>
-      </div>
-
-      <div class="q-block">
-        <label class="q-label">SUS8. この「フォーム」はとても使いづらいと感じた</label>
-        <div class="radio-group sus-row" id="sus8">
-          <label><input type="radio" name="sus8" value="5" onchange="highlightSelected('sus8')"> 5：強くそう思う</label>
-          <label><input type="radio" name="sus8" value="4" onchange="highlightSelected('sus8')"> 4：ややそう思う</label>
-          <label><input type="radio" name="sus8" value="3" onchange="highlightSelected('sus8')"> 3：どちらともいえない</label>
-          <label><input type="radio" name="sus8" value="2" onchange="highlightSelected('sus8')"> 2：あまりそう思わない</label>
-          <label><input type="radio" name="sus8" value="1" onchange="highlightSelected('sus8')"> 1：まったくそう思わない</label>
-        </div>
-      </div>
-
-      <div class="q-block">
-        <label class="q-label">SUS9. この「フォーム」を使う自信が持てた</label>
-        <div class="radio-group sus-row" id="sus9">
-          <label><input type="radio" name="sus9" value="5" onchange="highlightSelected('sus9')"> 5：強くそう思う</label>
-          <label><input type="radio" name="sus9" value="4" onchange="highlightSelected('sus9')"> 4：ややそう思う</label>
-          <label><input type="radio" name="sus9" value="3" onchange="highlightSelected('sus9')"> 3：どちらともいえない</label>
-          <label><input type="radio" name="sus9" value="2" onchange="highlightSelected('sus9')"> 2：あまりそう思わない</label>
-          <label><input type="radio" name="sus9" value="1" onchange="highlightSelected('sus9')"> 1：まったくそう思わない</label>
-        </div>
-      </div>
-
-      <div class="q-block" style="margin-bottom:0;">
-        <label class="q-label">SUS10. 私がこの「フォーム」を使う際には、多くのことを学ぶ必要があった</label>
-        <div class="radio-group sus-row" id="sus10">
-          <label><input type="radio" name="sus10" value="5" onchange="highlightSelected('sus10')"> 5：強くそう思う</label>
-          <label><input type="radio" name="sus10" value="4" onchange="highlightSelected('sus10')"> 4：ややそう思う</label>
-          <label><input type="radio" name="sus10" value="3" onchange="highlightSelected('sus10')"> 3：どちらともいえない</label>
-          <label><input type="radio" name="sus10" value="2" onchange="highlightSelected('sus10')"> 2：あまりそう思わない</label>
-          <label><input type="radio" name="sus10" value="1" onchange="highlightSelected('sus10')"> 1：まったくそう思わない</label>
-        </div>
-      </div>
-    </div><!-- /sus-section -->
-
-    <div class="modal-btn-row">
-      <button class="btn-mail" onclick="submitAll()">✉️ アイデアとアンケートを送信する</button>
-    </div>
-  </div>
-</div>
-
-<!-- 感謝メッセージモーダル -->
-<div class="thank-modal-overlay" id="thankModal">
-  <div class="thank-modal">
-    <div class="thank-icon">🎉</div>
-    <div class="thank-title">ありがとうございました！</div>
-    <div class="thank-body">
-      <strong id="thank-name-label"></strong><br>
-      あなたの現場からの声が、<br>
-      <strong>医療をよりよくするための第一歩</strong>になります。<br><br>
-      いただいたアイデアは担当部署にて内容を確認し、<br>
-      <strong>検討結果を登録いただいたメールアドレスへご連絡</strong>いたします。<br>
-      しばらくお待ちください😊
-    </div>
-    <div class="thank-reply-box">
-      📧 返信先：<span class="reply-email" id="thank-reply-email"></span>
-    </div>
-    <p id="close-countdown-wrap" style="font-size:0.82em; color:#888; margin-bottom:12px;">
-      <span id="close-countdown">30</span> 秒後に自動的に閉じます
-    </p>
-    <div class="thank-btn-row">
-      <button class="btn-new-idea" onclick="startNewIdea()">💡 新しいアイデアを提案する</button>
-      <button class="btn-just-close" onclick="closeThankModal()">このまま閉じる</button>
-    </div>
-  </div>
-</div>
-
-<script src="main.js"></script>
-</body>
-</html>
+@media(max-width:600px){
+  .nav-btn-row { flex-direction: column; }
+  button { width: 100%; }
+  .stepper { gap: 2px; padding: 10px 8px; }
+  .step-label { font-size: 0.58em; }
+  .end-screen { padding: 40px 20px; }
+}
