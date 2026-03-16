@@ -8,6 +8,7 @@
 </head>
 <body>
 <div class="container">
+
   <div class="header">
     <h1>
       MIT: Medical Innovation Triage<br>
@@ -66,6 +67,7 @@
   </div>
 
   <form id="ideaForm" novalidate>
+
     <!-- ステップ1：基本情報 -->
     <div class="block active" id="step0">
       <div class="block-title">📋 第1ステップ：基本情報</div>
@@ -374,14 +376,13 @@
       </div>
     </div>
 
-    <!-- SUSセクション -->
+    <!-- SUS（システムユーザビリティスケール）日本語版 -->
     <div class="sus-section">
       <div class="sus-section-title">📊 SUS（システムユーザビリティスケール）</div>
       <p class="sus-section-desc">
         以下の10項目は、フォームの使いやすさを測定する標準的な評価尺度です（Brooke, 1996; 甘利ら, 2025）。<br>
         <strong>このフォーム全体</strong>に対する印象をお答えください。1（まったくそう思わない）〜 5（強くそう思う）
       </p>
-
       <div class="q-block">
         <label class="q-label">SUS1. この「フォーム」は頻繁に利用したいと思う</label>
         <div class="radio-group sus-row" id="sus1">
@@ -392,7 +393,6 @@
           <label><input type="radio" name="sus1" value="1" onchange="highlightSelected('sus1')"> 1：まったくそう思わない</label>
         </div>
       </div>
-
       <div class="q-block">
         <label class="q-label">SUS2. この「フォーム」は必要以上に複雑だと感じた
           <span style="font-size:0.78em; font-weight:normal; color:#888; display:block; margin-top:4px;">
@@ -407,7 +407,6 @@
           <label><input type="radio" name="sus2" value="1" onchange="highlightSelected('sus2')"> 1：まったくそう思わない</label>
         </div>
       </div>
-
       <div class="q-block">
         <label class="q-label">SUS3. この「フォーム」は使いやすいと思った</label>
         <div class="radio-group sus-row" id="sus3">
@@ -418,7 +417,6 @@
           <label><input type="radio" name="sus3" value="1" onchange="highlightSelected('sus3')"> 1：まったくそう思わない</label>
         </div>
       </div>
-
       <div class="q-block">
         <label class="q-label">SUS4. 私がこの「フォーム」を使えるようになるためには、技術者のサポートが必要だと思う</label>
         <div class="radio-group sus-row" id="sus4">
@@ -429,7 +427,6 @@
           <label><input type="radio" name="sus4" value="1" onchange="highlightSelected('sus4')"> 1：まったくそう思わない</label>
         </div>
       </div>
-
       <div class="q-block">
         <label class="q-label">SUS5. この「フォーム」の様々な機能は、お互いによく連携されていると感じた</label>
         <div class="radio-group sus-row" id="sus5">
@@ -440,7 +437,6 @@
           <label><input type="radio" name="sus5" value="1" onchange="highlightSelected('sus5')"> 1：まったくそう思わない</label>
         </div>
       </div>
-
       <div class="q-block">
         <label class="q-label">SUS6. この「フォーム」には一貫性がなさすぎると思った</label>
         <div class="radio-group sus-row" id="sus6">
@@ -451,7 +447,6 @@
           <label><input type="radio" name="sus6" value="1" onchange="highlightSelected('sus6')"> 1：まったくそう思わない</label>
         </div>
       </div>
-
       <div class="q-block">
         <label class="q-label">SUS7. ほとんどの人はこの「フォーム」をすぐに使いこなせるようになると思う</label>
         <div class="radio-group sus-row" id="sus7">
@@ -462,7 +457,6 @@
           <label><input type="radio" name="sus7" value="1" onchange="highlightSelected('sus7')"> 1：まったくそう思わない</label>
         </div>
       </div>
-
       <div class="q-block">
         <label class="q-label">SUS8. この「フォーム」はとても使いづらいと感じた</label>
         <div class="radio-group sus-row" id="sus8">
@@ -473,7 +467,6 @@
           <label><input type="radio" name="sus8" value="1" onchange="highlightSelected('sus8')"> 1：まったくそう思わない</label>
         </div>
       </div>
-
       <div class="q-block">
         <label class="q-label">SUS9. この「フォーム」を使う自信が持てた</label>
         <div class="radio-group sus-row" id="sus9">
@@ -484,7 +477,6 @@
           <label><input type="radio" name="sus9" value="1" onchange="highlightSelected('sus9')"> 1：まったくそう思わない</label>
         </div>
       </div>
-
       <div class="q-block" style="margin-bottom:0;">
         <label class="q-label">SUS10. 私がこの「フォーム」を使う際には、多くのことを学ぶ必要があった</label>
         <div class="radio-group sus-row" id="sus10">
