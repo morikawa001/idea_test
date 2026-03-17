@@ -274,7 +274,7 @@ function buildText() {
     '【研究参加同意】',
     `私、${getVal('q2') || '（氏名未記入）'}は、本研究の目的を理解し、参加に同意します。`,
     '',
-   '【基本情報】',
+    '【基本情報】',
     `所属部署　　　：${getVal('q1') || '（未選択）'}`,
     `氏　　名　　　：${getVal('q2') || '（未記入）'}`,
     `メールアドレス：${getVal('q2b') || '（未記入）'}`,
@@ -283,7 +283,8 @@ function buildText() {
     '【回答者プロフィール（アンケート）】',
     `年　　齢　　　：${getVal('sq0_age') || '（未選択）'}`,
     `経験年数　　　：${getVal('sq0_experience') || '（未選択）'}`,
-    `IT使用経験　　：${getVal('sq0_it_experience') || '（未選択）'}`,
+    `IT使用経験　　：${getItExperienceChecks().join(' / ') || '（未選択）'}`,
+    `ITレベル評価　：${getItLevelLabel() || '（未評価）'}`,
     '',
     '【P：現場の困りごと・背景】',
     `困っている対象：${getRadio('q4') || '（未選択）'}`,
@@ -390,9 +391,11 @@ function buildCsvText() {
   if (q12v.length > 0) { q12v.forEach((v, idx) => addRow(`q12_outcome_${idx+1}`, v)); }
   else addRow('q12_outcome_1', '');
   addRow('q13_expected_improvement', getVal('q13'));
-  addRow('sq0_age',           getVal('sq0_age'));
-  addRow('sq0_experience',    getVal('sq0_experience'));
-  addRow('sq0_it_experience', getVal('sq0_it_experience'));
+   // SQ0（プロフィール）
+  addRow('sq0_age',        getVal('sq0_age'));
+  addRow('sq0_experience', getVal('sq0_experience'));
+  addRow('sq0_it_items',   getItExperienceChecks().join(' / '));
+  addRow('sq0_it_level',   getItLevelLabel() || '（未評価）');
   addRow('report_creation_time', elapsed);
   addRow('sq1_usability',    getSurveyRadio('sq1'));
   addRow('sq2_structuring',  getSurveyRadio('sq2'));
@@ -422,9 +425,12 @@ function sendMail() {
 
 function submitAll() {
   const missing = [];
-  if (!getVal('sq0_age'))           missing.push('SQ0-a（年齢）');
-  if (!getVal('sq0_experience'))    missing.push('SQ0-b（経験年数）');
-  if (!getVal('sq0_it_experience')) missing.push('SQ0-c（IT使用経験）');
+   // SQ0 系を必須
+  if (!getVal('sq0_age'))        missing.push('SQ0-a（年齢）');
+  if (!getVal('sq0_experience')) missing.push('SQ0-b（経験年数）');
+  if (getItExperienceChecks().length === 0) {
+    missing.push('SQ0-c（IT使用経験）');
+  }
   ['sq1','sq2','sq4','sq5','sq6_scale'].forEach(name => {
     if (!document.querySelector(`input[name="${name}"]:checked`)) {
       missing.push(name === 'sq6_scale' ? 'SQ6（自己効力感）' : name.toUpperCase());
@@ -545,6 +551,8 @@ function resetForm() {
   ['sq1','sq2','sq4','sq5','sq6_scale'].forEach(n =>
     document.querySelectorAll(`input[name="${n}"]`).forEach(r => r.checked = false));
   document.querySelectorAll('input[name="sq3"]').forEach(r => r.checked = false);
+  // SQ0-c IT経験のチェック解除
+  document.querySelectorAll('input[name="sq0_it"]').forEach(r => r.checked = false);
   for (let i = 1; i <= 10; i++)
     document.querySelectorAll(`input[name="sus${i}"]`).forEach(r => r.checked = false);
   const sq6el = document.getElementById('sq6'); if (sq6el) sq6el.value = '';
