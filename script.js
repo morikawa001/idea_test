@@ -390,6 +390,9 @@ function buildCsvText() {
   if (q12v.length > 0) { q12v.forEach((v, idx) => addRow(`q12_outcome_${idx+1}`, v)); }
   else addRow('q12_outcome_1', '');
   addRow('q13_expected_improvement', getVal('q13'));
+  addRow('sq0_age',           getVal('sq0_age'));
+  addRow('sq0_experience',    getVal('sq0_experience'));
+  addRow('sq0_it_experience', getVal('sq0_it_experience'));
   addRow('report_creation_time', elapsed);
   addRow('sq1_usability',    getSurveyRadio('sq1'));
   addRow('sq2_structuring',  getSurveyRadio('sq2'));
@@ -419,6 +422,9 @@ function sendMail() {
 
 function submitAll() {
   const missing = [];
+  if (!getVal('sq0_age'))           missing.push('SQ0-a（年齢）');
+  if (!getVal('sq0_experience'))    missing.push('SQ0-b（経験年数）');
+  if (!getVal('sq0_it_experience')) missing.push('SQ0-c（IT使用経験）');
   ['sq1','sq2','sq4','sq5','sq6_scale'].forEach(name => {
     if (!document.querySelector(`input[name="${name}"]:checked`)) {
       missing.push(name === 'sq6_scale' ? 'SQ6（自己効力感）' : name.toUpperCase());
