@@ -646,6 +646,37 @@ function getSurveyChecks(name) {
   const els = document.querySelectorAll(`input[name="${name}"]:checked`);
   return els.length > 0 ? Array.from(els).map(e => e.value).join(' / ') : '（未選択）';
 }
+
+// IT使用経験（SQ0-c）のチェックとレベル判定
+function getItExperienceChecks() {
+  return Array.from(document.querySelectorAll('input[name="sq0_it"]:checked'))
+    .map(e => e.value);
+}
+
+// ITレベル：初級／中級／上級（案Aのルール）
+// - チェックなし       → null（未回答扱い）
+// - 「メール・Web」だけ → 初級
+// - メール・Web ＋ 他1つ → 初級〜中級寄りだが、ここでは中級に含める
+// - 「電子カルテ」「スマホアプリ」「Excel」あたりが含まれる → 中級
+// - 「プログラム・スクリプト」含む → 上級
+function getItLevelLabel() {
+  const vals = getItExperienceChecks();
+  if (vals.length === 0) return null;
+
+  const hasMail   = vals.some(v => v.includes('メール・インターネット'));
+  const hasEmr    = vals.some(v => v.includes('電子カルテ'));
+  const hasApp    = vals.some(v => v.includes('スマートフォンアプリ'));
+  const hasExcel  = vals.some(v => v.includes('表計算ソフト'));
+  const hasProg   = vals.some(v => v.includes('プログラムやスクリプト'));
+
+  if (hasProg) return '上級';
+  if (hasExcel || hasApp || hasEmr) return '中級';
+  if (hasMail && vals.length === 1) return '初級';
+  if (hasMail && vals.length >= 2)  return '中級';
+  // その他の組み合わせは中級に寄せる
+  return '中級';
+}
+
 function showSurveyFromPreview() {
   closePreviewModal();
   sendLog('completed', 5);
