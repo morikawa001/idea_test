@@ -425,12 +425,15 @@ function sendMail() {
 
 function submitAll() {
   const missing = [];
-   // SQ0 系を必須
+  // SQ0-a, SQ0-b は必須
   if (!getVal('sq0_age'))        missing.push('SQ0-a（年齢）');
   if (!getVal('sq0_experience')) missing.push('SQ0-b（経験年数）');
-  if (getItExperienceChecks().length === 0) {
-    missing.push('SQ0-c（IT使用経験）');
-  }
+
+  // SQ0-c は「未回答なら注意メッセージだけ」にする場合は、missing には入れない
+  // if (getItExperienceChecks().length === 0) {
+  //   missing.push('SQ0-c（IT使用経験）');
+  // }
+
   ['sq1','sq2','sq4','sq5','sq6_scale'].forEach(name => {
     if (!document.querySelector(`input[name="${name}"]:checked`)) {
       missing.push(name === 'sq6_scale' ? 'SQ6（自己効力感）' : name.toUpperCase());
@@ -439,6 +442,7 @@ function submitAll() {
   if (document.querySelectorAll('input[name="sq3"]:checked').length === 0) {
     missing.push('SQ3');
   }
+
   if (missing.length > 0) {
     alert('以下の項目を入力してください：\n' + missing.join(', '));
     return;
