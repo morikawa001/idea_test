@@ -434,19 +434,39 @@
       </select>
     </div>
 
-    <!-- 追加：SQ0c IT機器の使用経験 -->
+    <!-- 追加：SQ0-c IT機器・デジタルツールの使用経験（複数選択可） -->
     <div class="q-block">
-      <label class="q-label">SQ0-c. IT機器・デジタルツールの使用経験</label>
-      <div class="q-hint">ふだんの業務や日常生活でのIT機器の使い方について、最も近いものを選んでください</div>
-      <select id="sq0_it_experience">
-        <option value="">-- 選択してください --</option>
-        <option>ほとんど使わない（スマホ・PCはあまり触らない）</option>
-        <option>メール・インターネット程度（基本的な操作ができる）</option>
-        <option>電子カルテなど院内システムを日常的に利用している</option>
-        <option>スマートフォンアプリやクラウドサービスを業務でも活用している</option>
-        <option>表計算ソフト（Excel 等）での集計・簡単な資料作成ができる</option>
-        <option>プログラミングやシステム設定など高度なIT操作の経験がある</option>
-      </select>
+      <label class="q-label">SQ0-c. IT機器・デジタルツールの使用経験（複数選択可）</label>
+      <div class="q-hint">
+        あてはまるものをすべて選んでください（業務・日常どちらも含みます）
+      </div>
+      <div class="check-group" id="sq0_it_group">
+        <label>
+          <input type="checkbox" name="sq0_it" value="メール・インターネット（Web閲覧）を利用している"
+                 onchange="highlightChecked('sq0_it_group')">
+          メール・インターネット（Web閲覧）を利用している
+        </label>
+        <label>
+          <input type="checkbox" name="sq0_it" value="電子カルテや院内システムを日常的に利用している"
+                 onchange="highlightChecked('sq0_it_group')">
+          電子カルテや院内システムを日常的に利用している
+        </label>
+        <label>
+          <input type="checkbox" name="sq0_it" value="スマートフォンアプリやクラウドサービスを業務で活用している"
+                 onchange="highlightChecked('sq0_it_group')">
+          スマートフォンアプリやクラウドサービスを業務で活用している
+        </label>
+        <label>
+          <input type="checkbox" name="sq0_it" value="表計算ソフト（Excel 等）で集計や資料作成を行っている"
+                 onchange="highlightChecked('sq0_it_group')">
+          表計算ソフト（Excel 等）で集計や資料作成を行っている
+        </label>
+        <label>
+          <input type="checkbox" name="sq0_it" value="プログラムやスクリプトを書いたり、システム設定を行ったことがある"
+                 onchange="highlightChecked('sq0_it_group')">
+          プログラムやスクリプトを書いたり、システム設定を行ったことがある
+        </label>
+      </div>
     </div>
     
     <div class="q-block">
