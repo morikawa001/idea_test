@@ -1,438 +1,25 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MIT:医療をよくするアイデア＆お困りごと提案フォーム</title>
-<style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body {
-  font-family: 'Hiragino Kaku Gothic ProN', 'Meiryo', sans-serif;
-  background: #f2f8f5;
-  color: #333;
-  padding: 20px;
-  min-height: 100vh;
-}
-.container { max-width: 720px; margin: 0 auto; }
-
-/* ===== ヘッダー type A ===== */
-.header {
-  background: linear-gradient(135deg, #2d7a5f, #4caf88);
-  color: white;
-  padding: 24px 28px;
-  border-radius: 12px 12px 0 0;
-  text-align: center;
-}
-.header h1 { font-size: 1.4em; margin-bottom: 6px; }
-.header p  { font-size: 0.85em; opacity: 0.88; }
-.header-sub {
-  margin-top: 10px;
-  font-size: 0.80em;
-  opacity: 0.80;
-  background: rgba(255,255,255,0.15);
-  border-radius: 8px;
-  padding: 8px 14px;
-  line-height: 1.7;
-}
-
-/* ===== ステッパー ===== */
-.stepper {
-  display: flex;
-  background: white;
-  padding: 14px 20px;
-  gap: 4px;
-  align-items: center;
-  border-bottom: 1px solid #d4eddf;
-  overflow-x: auto;
-}
-.step-dot {
-  display: flex; flex-direction: column; align-items: center;
-  gap: 4px; flex: 1; min-width: 44px;
-}
-.step-circle {
-  width: 30px; height: 30px;
-  border-radius: 50%;
-  background: #d4eddf;
-  color: #7fba9e;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 0.75em; font-weight: bold;
-  transition: all 0.4s;
-}
-.step-circle.done   { background: #4caf88; color: white; }
-.step-circle.active { background: #2d7a5f; color: white; box-shadow: 0 0 0 4px #b0ddc8; }
-.step-label { font-size: 0.65em; color: #888; text-align: center; }
-.step-label.active { color: #2d7a5f; font-weight: bold; }
-.step-line { height: 2px; background: #d4eddf; flex: 0.3; border-radius: 1px; }
-.step-line.done { background: #4caf88; }
-
-/* ===== プログレスバー ===== */
-.progress-bar-wrap {
-  background: #edf7f2;
-  padding: 8px 20px;
-  display: flex; align-items: center; gap: 10px;
-  font-size: 0.82em; color: #2d7a5f;
-}
-.progress-bar-bg {
-  flex: 1; height: 8px;
-  background: #a8d8bb; border-radius: 4px; overflow: hidden;
-}
-.progress-bar-fill {
-  height: 100%; width: 0%;
-  background: linear-gradient(90deg, #4caf88, #82d4a8);
-  border-radius: 4px; transition: width 0.5s ease;
-}
-
-/* ===== ナビゲーター ===== */
-.navigator {
-  display: flex; align-items: flex-start; gap: 12px;
-  background: white;
-  padding: 16px 20px;
-  border-bottom: 1px solid #edf7f2;
-  animation: fadeSlideIn 0.4s ease;
-}
-.nav-avatar {
-  font-size: 2.2em; flex-shrink: 0;
-  animation: bounce 1s ease infinite alternate;
-}
-@keyframes bounce {
-  from { transform: translateY(0); }
-  to   { transform: translateY(-4px); }
-}
-.nav-bubble {
-  background: #edf7f2;
-  border-radius: 0 12px 12px 12px;
-  padding: 10px 14px;
-  font-size: 0.88em;
-  line-height: 1.6;
-  color: #2d7a5f;
-  position: relative;
-  flex: 1;
-}
-.nav-bubble::before {
-  content: '';
-  position: absolute; left: -8px; top: 10px;
-  border: 8px solid transparent;
-  border-right-color: #edf7f2;
-  border-left: 0;
-}
-
-/* ===== ステップブロック ===== */
-.block {
-  background: white;
-  border-left: 5px solid #4caf88;
-  border-radius: 0 0 8px 8px;
-  padding: 24px 28px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-  display: none;
-  animation: fadeSlideIn 0.45s ease;
-}
-.block.active { display: block; }
-@keyframes fadeSlideIn {
-  from { opacity: 0; transform: translateY(18px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-.block-title {
-  font-size: 1.05em; font-weight: bold;
-  color: #2d7a5f; margin-bottom: 20px;
-  padding-bottom: 10px;
-  border-bottom: 2px solid #d4eddf;
-  display: flex; align-items: center; gap: 8px;
-}
-.block-title .badge {
-  font-size: 0.72em; background: #4caf88; color: white;
-  padding: 2px 10px; border-radius: 10px;
-}
-
-/* ===== 設問 ===== */
-.q-block { margin-bottom: 24px; }
-.q-label {
-  font-size: 0.93em; font-weight: bold;
-  margin-bottom: 6px; display: block; color: #2c3e50;
-}
-.q-label .req { color: #e57373; font-size: 0.82em; margin-left: 4px; }
-.q-hint { font-size: 0.79em; color: #888; margin-bottom: 8px; }
-
-/* ===== フィードバック ===== */
-.feedback-box {
-  margin-top: 8px; padding: 8px 12px;
-  border-radius: 6px; font-size: 0.82em;
-  line-height: 1.5; min-height: 0;
-  transition: all 0.3s; display: none;
-}
-.feedback-box.show { display: block; }
-.feedback-good    { background: #edf7f2; color: #2d7a5f; border-left: 3px solid #4caf88; }
-.feedback-neutral { background: #fef9e7; color: #9a7d0a; border-left: 3px solid #f0c040; }
-.feedback-tip     { background: #e8f5f0; color: #2d7a5f; border-left: 3px solid #82d4a8; }
-
-/* ===== フォーム部品 ===== */
-select, input[type="text"], textarea {
-  width: 100%; padding: 10px 13px;
-  border: 1.5px solid #c5d9cc; border-radius: 7px;
-  font-size: 0.92em; font-family: inherit;
-  background: #fdfefe; transition: border 0.2s, box-shadow 0.2s;
-}
-select:focus, input:focus, textarea:focus {
-  outline: none; border-color: #4caf88;
-  background: #edf7f2; box-shadow: 0 0 0 3px rgba(76,175,136,0.15);
-}
-textarea { resize: vertical; min-height: 80px; }
-
-/* ===== ラジオ・チェック ===== */
-.radio-group, .check-group {
-  display: flex; flex-direction: column; gap: 8px;
-}
-.radio-group label, .check-group label {
-  display: flex; align-items: flex-start; gap: 10px;
-  font-size: 0.90em; cursor: pointer;
-  padding: 9px 14px;
-  border: 1.5px solid #d4eddf; border-radius: 8px;
-  transition: all 0.2s; background: #fdfefe;
-}
-.radio-group label:hover, .check-group label:hover {
-  background: #edf7f2; border-color: #a8d8bb;
-}
-.radio-group label.selected, .check-group label.selected {
-  background: #edf7f2; border-color: #4caf88;
-  box-shadow: 0 0 0 2px rgba(76,175,136,0.18);
-}
-.radio-group input, .check-group input {
-  margin-top: 2px; accent-color: #4caf88; flex-shrink: 0;
-}
-
-/* ===== その他テキスト ===== */
-.other-input-wrap {
-  display: none;
-  margin-top: 8px;
-  padding: 10px 14px;
-  background: #f4fbf7;
-  border-radius: 6px;
-  border: 1.5px dashed #a8d8bb;
-  animation: fadeSlideIn 0.3s ease;
-}
-.other-input-wrap.show { display: block; }
-.other-input-wrap textarea { min-height: 60px; background: white; }
-
-/* ===== ボタン ===== */
-.nav-btn-row {
-  display: flex; gap: 12px;
-  justify-content: space-between;
-  margin-top: 28px; flex-wrap: wrap;
-}
-.btn-prev    { background: #dce5df; color: #5a6b5e; }
-.btn-next    { background: #4caf88; color: white; flex: 1; }
-.btn-preview { background: #2d7a5f; color: white; flex: 1; }
-.btn-reset   { background: #b2c5ba; color: white; }
-.btn-finish  { background: #2d7a5f; color: white; }
-button {
-  padding: 12px 22px; border: none; border-radius: 8px;
-  font-size: 0.95em; font-weight: bold; cursor: pointer;
-  font-family: inherit; transition: opacity 0.2s, transform 0.1s;
-}
-button:hover  { opacity: 0.88; }
-button:active { transform: scale(0.97); }
-
-/* ===== アニメーション ===== */
-.check-anim {
-  display: inline-block;
-  animation: popIn 0.4s cubic-bezier(0.175,0.885,0.32,1.275);
-}
-@keyframes popIn {
-  0%   { transform: scale(0); opacity: 0; }
-  80%  { transform: scale(1.3); }
-  100% { transform: scale(1); opacity: 1; }
-}
-
-/* ===== モーダル共通 ===== */
-.modal-overlay {
-  display: none; position: fixed;
-  top: 0; left: 0; width: 100%; height: 100%;
-  background: rgba(0,0,0,0.50); z-index: 1000;
-  align-items: center; justify-content: center;
-}
-.modal-overlay.active { display: flex; }
-.modal {
-  background: white; border-radius: 14px;
-  padding: 28px; max-width: 640px; width: 94%;
-  max-height: 88vh; overflow-y: auto;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.18);
-  animation: fadeSlideIn 0.35s ease;
-}
-.modal h2 { color: #2d7a5f; margin-bottom: 12px; font-size: 1.1em; }
-.modal pre {
-  background: #f4f8f6; padding: 14px; border-radius: 8px;
-  font-size: 0.81em; white-space: pre-wrap; line-height: 1.75;
-  font-family: 'Courier New', monospace; border: 1px solid #d4eddf;
-}
-.modal-btn-row { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
-.btn-mail  { background: #4caf88; color: white; }
-.btn-close { background: #b2c5ba; color: white; }
-
-/* ===== 感謝モーダル ===== */
-.thank-modal-overlay {
-  display: none; position: fixed;
-  top: 0; left: 0; width: 100%; height: 100%;
-  background: rgba(0,0,0,0.55); z-index: 2000;
-  align-items: center; justify-content: center;
-}
-.thank-modal-overlay.active { display: flex; }
-.thank-modal {
-  background: white; border-radius: 20px;
-  padding: 44px 36px; max-width: 440px; width: 92%;
-  text-align: center;
-  box-shadow: 0 12px 48px rgba(0,0,0,0.20);
-  animation: thankPop 0.5s cubic-bezier(0.175,0.885,0.32,1.275);
-}
-@keyframes thankPop {
-  0%   { opacity: 0; transform: scale(0.7); }
-  80%  { transform: scale(1.04); }
-  100% { opacity: 1; transform: scale(1); }
-}
-.thank-icon {
-  font-size: 4em; margin-bottom: 16px;
-  animation: iconBounce 0.6s 0.3s cubic-bezier(0.175,0.885,0.32,1.275) both;
-}
-@keyframes iconBounce {
-  0%   { transform: scale(0) rotate(-20deg); opacity: 0; }
-  80%  { transform: scale(1.2) rotate(5deg); }
-  100% { transform: scale(1) rotate(0deg); opacity: 1; }
-}
-.thank-title {
-  font-size: 1.45em; font-weight: bold;
-  color: #2d7a5f; margin-bottom: 12px;
-}
-.thank-body {
-  font-size: 0.92em; color: #555;
-  line-height: 1.9; margin-bottom: 16px;
-}
-.thank-body strong { color: #4caf88; }
-.thank-reply-box {
-  background: #edf7f2;
-  border-left: 4px solid #4caf88;
-  border-radius: 8px;
-  padding: 12px 16px;
-  margin: 0 0 24px;
-  font-size: 0.88em;
-  color: #2d7a5f;
-  text-align: left;
-  line-height: 1.7;
-}
-.thank-reply-box .reply-email {
-  font-weight: bold;
-  word-break: break-all;
-  color: #1a5c40;
-}
-.thank-btn-row { display: flex; flex-direction: column; gap: 10px; }
-.btn-new-idea {
-  background: linear-gradient(135deg, #2d7a5f, #4caf88);
-  color: white; padding: 13px 20px;
-  border: none; border-radius: 10px;
-  font-size: 0.95em; font-weight: bold;
-  cursor: pointer; font-family: inherit;
-  transition: opacity 0.2s, transform 0.1s;
-}
-.btn-new-idea:hover  { opacity: 0.88; }
-.btn-new-idea:active { transform: scale(0.97); }
-.btn-just-close {
-  background: #ecf0f1; color: #777;
-  padding: 10px 20px;
-  border: none; border-radius: 10px;
-  font-size: 0.88em; cursor: pointer; font-family: inherit;
-  transition: opacity 0.2s;
-}
-.btn-just-close:hover { opacity: 0.75; }
-
-/* ===== アンケートモーダル ===== */
-.survey-modal-overlay {
-  display: none; position: fixed;
-  top: 0; left: 0; width: 100%; height: 100%;
-  background: rgba(0,0,0,0.50); z-index: 1500;
-  align-items: center; justify-content: center;
-}
-.survey-modal-overlay.active { display: flex; }
-.survey-modal {
-  background: white; border-radius: 14px;
-  padding: 28px; max-width: 640px; width: 94%;
-  max-height: 88vh; overflow-y: auto;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.18);
-  animation: fadeSlideIn 0.35s ease;
-}
-.survey-modal h2 { color: #2d7a5f; margin-bottom: 8px; font-size: 1.1em; }
-
-/* ===== SUSセクション枠 ===== */
-.sus-section {
-  margin-top: 32px; padding: 20px 18px;
-  background: #f0f9f4; border: 2px solid #4caf88; border-radius: 10px;
-}
-.sus-section-title { font-size: 1.0em; font-weight: bold; color: #2d7a5f; margin-bottom: 6px; }
-.sus-section-desc  { font-size: 0.82em; color: #666; margin-bottom: 16px; line-height: 1.7; }
-.sus-row label { padding: 7px 12px; font-size: 0.87em; }
-
-
-
-/* ===== 終了画面 ===== */
-.end-screen {
-  display: none;
-  background: white;
-  border-radius: 0 0 12px 12px;
-  padding: 56px 36px;
-  text-align: center;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-  animation: fadeSlideIn 0.5s ease;
-}
-.end-screen.active { display: block; }
-.end-icon {
-  font-size: 4.5em;
-  margin-bottom: 20px;
-  animation: iconBounce 0.6s 0.2s cubic-bezier(0.175,0.885,0.32,1.275) both;
-}
-.end-title {
-  font-size: 1.55em; font-weight: bold;
-  color: #2d7a5f; margin-bottom: 16px;
-}
-.end-divider {
-  width: 60px; height: 3px;
-  background: linear-gradient(90deg, #4caf88, #82d4a8);
-  border-radius: 2px; margin: 0 auto 28px;
-}
-.end-body {
-  font-size: 0.95em; color: #555;
-  line-height: 2.1; margin-bottom: 36px;
-}
-.end-body strong { color: #4caf88; }
-.btn-restart {
-  background: #edf7f2; color: #2d7a5f;
-  border: 2px solid #4caf88;
-  padding: 12px 32px; border-radius: 8px;
-  font-size: 0.93em; font-weight: bold;
-  cursor: pointer; font-family: inherit;
-  transition: all 0.2s;
-}
-.btn-restart:hover  { background: #d4eddf; }
-.btn-restart:active { transform: scale(0.97); }
-
-@media(max-width:600px){
-  .nav-btn-row { flex-direction: column; }
-  button { width: 100%; }
-  .stepper { gap: 2px; padding: 10px 8px; }
-  .step-label { font-size: 0.58em; }
-  .end-screen { padding: 40px 20px; }
-}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MIT:医療をよくするアイデア＆お困りごと提案フォーム</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <div class="container">
+
   <div class="header">
-  <h1>
-    MIT: Medical Innovation Triage<br>
-    医療をよくするアイデア＆お困りごと提案フォーム
-  </h1>
-  <p>日々の業務の中で感じている「ちょっとした不便」や「こうなったらいいのに」というアイデアをお寄せください。</p>
-  <div class="header-sub">
-    ※本フォームは、医療機器開発アイデアの「たたき台」を気軽に共有していただくための仕組みです。<br>
-    専門的な内容でなくても構いません。思いついたタイミングで、短時間で入力いただけます。
+    <h1>
+      MIT: Medical Innovation Triage<br>
+      医療をよくするアイデア＆お困りごと提案フォーム
+    </h1>
+    <p>日々の業務の中で感じている「ちょっとした不便」や「こうなったらいいのに」というアイデアをお寄せください。</p>
+    <div class="header-sub">
+      ※本フォームは、医療機器開発アイデアの「たたき台」を気軽に共有していただくための仕組みです。<br>
+      専門的な内容でなくても構いません。思いついたタイミングで、短時間で入力いただけます。
+    </div>
   </div>
-</div>
 
   <!-- ステッパー -->
   <div class="stepper" id="stepper">
@@ -716,7 +303,6 @@ button:active { transform: scale(0.97); }
   </div>
 </div>
 
-
 <!-- アンケートモーダル -->
 <div class="survey-modal-overlay" id="surveyModal">
   <div class="survey-modal">
@@ -797,118 +383,109 @@ button:active { transform: scale(0.97); }
         以下の10項目は、フォームの使いやすさを測定する標準的な評価尺度です（Brooke, 1996; 甘利ら, 2025）。<br>
         <strong>このフォーム全体</strong>に対する印象をお答えください。1（まったくそう思わない）〜 5（強くそう思う）
       </p>
-     <div class="q-block">
-  <label class="q-label">SUS1. この「フォーム」は頻繁に利用したいと思う</label>
-  <div class="radio-group sus-row" id="sus1">
-    <label><input type="radio" name="sus1" value="5" onchange="highlightSelected('sus1')"> 5：強くそう思う</label>
-    <label><input type="radio" name="sus1" value="4" onchange="highlightSelected('sus1')"> 4：ややそう思う</label>
-    <label><input type="radio" name="sus1" value="3" onchange="highlightSelected('sus1')"> 3：どちらともいえない</label>
-    <label><input type="radio" name="sus1" value="2" onchange="highlightSelected('sus1')"> 2：あまりそう思わない</label>
-    <label><input type="radio" name="sus1" value="1" onchange="highlightSelected('sus1')"> 1：まったくそう思わない</label>
-  </div>
-</div>
-
-<div class="q-block">
-  <label class="q-label">SUS2. この「フォーム」は必要以上に複雑だと感じた
-    <span style="font-size:0.78em; font-weight:normal; color:#888; display:block; margin-top:4px;">
-      ※「必要以上の複雑」とは、「このフォームの目的を達成するためにやむを得ないと思われる複雑さ」ということ
-    </span>
-  </label>
-  <div class="radio-group sus-row" id="sus2">
-    <label><input type="radio" name="sus2" value="5" onchange="highlightSelected('sus2')"> 5：強くそう思う</label>
-    <label><input type="radio" name="sus2" value="4" onchange="highlightSelected('sus2')"> 4：ややそう思う</label>
-    <label><input type="radio" name="sus2" value="3" onchange="highlightSelected('sus2')"> 3：どちらともいえない</label>
-    <label><input type="radio" name="sus2" value="2" onchange="highlightSelected('sus2')"> 2：あまりそう思わない</label>
-    <label><input type="radio" name="sus2" value="1" onchange="highlightSelected('sus2')"> 1：まったくそう思わない</label>
-  </div>
-</div>
-
-<div class="q-block">
-  <label class="q-label">SUS3. この「フォーム」は使いやすいと思った</label>
-  <div class="radio-group sus-row" id="sus3">
-    <label><input type="radio" name="sus3" value="5" onchange="highlightSelected('sus3')"> 5：強くそう思う</label>
-    <label><input type="radio" name="sus3" value="4" onchange="highlightSelected('sus3')"> 4：ややそう思う</label>
-    <label><input type="radio" name="sus3" value="3" onchange="highlightSelected('sus3')"> 3：どちらともいえない</label>
-    <label><input type="radio" name="sus3" value="2" onchange="highlightSelected('sus3')"> 2：あまりそう思わない</label>
-    <label><input type="radio" name="sus3" value="1" onchange="highlightSelected('sus3')"> 1：まったくそう思わない</label>
-  </div>
-</div>
-
-<div class="q-block">
-  <label class="q-label">SUS4. 私がこの「フォーム」を使えるようになるためには、技術者のサポートが必要だと思う</label>
-  <div class="radio-group sus-row" id="sus4">
-    <label><input type="radio" name="sus4" value="5" onchange="highlightSelected('sus4')"> 5：強くそう思う</label>
-    <label><input type="radio" name="sus4" value="4" onchange="highlightSelected('sus4')"> 4：ややそう思う</label>
-    <label><input type="radio" name="sus4" value="3" onchange="highlightSelected('sus4')"> 3：どちらともいえない</label>
-    <label><input type="radio" name="sus4" value="2" onchange="highlightSelected('sus4')"> 2：あまりそう思わない</label>
-    <label><input type="radio" name="sus4" value="1" onchange="highlightSelected('sus4')"> 1：まったくそう思わない</label>
-  </div>
-</div>
-
-<div class="q-block">
-  <label class="q-label">SUS5. この「フォーム」の様々な機能は、お互いによく連携されていると感じた</label>
-  <div class="radio-group sus-row" id="sus5">
-    <label><input type="radio" name="sus5" value="5" onchange="highlightSelected('sus5')"> 5：強くそう思う</label>
-    <label><input type="radio" name="sus5" value="4" onchange="highlightSelected('sus5')"> 4：ややそう思う</label>
-    <label><input type="radio" name="sus5" value="3" onchange="highlightSelected('sus5')"> 3：どちらともいえない</label>
-    <label><input type="radio" name="sus5" value="2" onchange="highlightSelected('sus5')"> 2：あまりそう思わない</label>
-    <label><input type="radio" name="sus5" value="1" onchange="highlightSelected('sus5')"> 1：まったくそう思わない</label>
-  </div>
-</div>
-
-<div class="q-block">
-  <label class="q-label">SUS6. この「フォーム」には一貫性がなさすぎると思った</label>
-  <div class="radio-group sus-row" id="sus6">
-    <label><input type="radio" name="sus6" value="5" onchange="highlightSelected('sus6')"> 5：強くそう思う</label>
-    <label><input type="radio" name="sus6" value="4" onchange="highlightSelected('sus6')"> 4：ややそう思う</label>
-    <label><input type="radio" name="sus6" value="3" onchange="highlightSelected('sus6')"> 3：どちらともいえない</label>
-    <label><input type="radio" name="sus6" value="2" onchange="highlightSelected('sus6')"> 2：あまりそう思わない</label>
-    <label><input type="radio" name="sus6" value="1" onchange="highlightSelected('sus6')"> 1：まったくそう思わない</label>
-  </div>
-</div>
-
-<div class="q-block">
-  <label class="q-label">SUS7. ほとんどの人はこの「フォーム」をすぐに使いこなせるようになると思う</label>
-  <div class="radio-group sus-row" id="sus7">
-    <label><input type="radio" name="sus7" value="5" onchange="highlightSelected('sus7')"> 5：強くそう思う</label>
-    <label><input type="radio" name="sus7" value="4" onchange="highlightSelected('sus7')"> 4：ややそう思う</label>
-    <label><input type="radio" name="sus7" value="3" onchange="highlightSelected('sus7')"> 3：どちらともいえない</label>
-    <label><input type="radio" name="sus7" value="2" onchange="highlightSelected('sus7')"> 2：あまりそう思わない</label>
-    <label><input type="radio" name="sus7" value="1" onchange="highlightSelected('sus7')"> 1：まったくそう思わない</label>
-  </div>
-</div>
-
-<div class="q-block">
-  <label class="q-label">SUS8. この「フォーム」はとても使いづらいと感じた</label>
-  <div class="radio-group sus-row" id="sus8">
-    <label><input type="radio" name="sus8" value="5" onchange="highlightSelected('sus8')"> 5：強くそう思う</label>
-    <label><input type="radio" name="sus8" value="4" onchange="highlightSelected('sus8')"> 4：ややそう思う</label>
-    <label><input type="radio" name="sus8" value="3" onchange="highlightSelected('sus8')"> 3：どちらともいえない</label>
-    <label><input type="radio" name="sus8" value="2" onchange="highlightSelected('sus8')"> 2：あまりそう思わない</label>
-    <label><input type="radio" name="sus8" value="1" onchange="highlightSelected('sus8')"> 1：まったくそう思わない</label>
-  </div>
-</div>
-
-<div class="q-block">
-  <label class="q-label">SUS9. この「フォーム」を使う自信が持てた</label>
-  <div class="radio-group sus-row" id="sus9">
-    <label><input type="radio" name="sus9" value="5" onchange="highlightSelected('sus9')"> 5：強くそう思う</label>
-    <label><input type="radio" name="sus9" value="4" onchange="highlightSelected('sus9')"> 4：ややそう思う</label>
-    <label><input type="radio" name="sus9" value="3" onchange="highlightSelected('sus9')"> 3：どちらともいえない</label>
-    <label><input type="radio" name="sus9" value="2" onchange="highlightSelected('sus9')"> 2：あまりそう思わない</label>
-    <label><input type="radio" name="sus9" value="1" onchange="highlightSelected('sus9')"> 1：まったくそう思わない</label>
-  </div>
-</div>
-
-<div class="q-block" style="margin-bottom:0;">
-  <label class="q-label">SUS10. 私がこの「フォーム」を使う際には、多くのことを学ぶ必要があった</label>
-  <div class="radio-group sus-row" id="sus10">
-    <label><input type="radio" name="sus10" value="5" onchange="highlightSelected('sus10')"> 5：強くそう思う</label>
-    <label><input type="radio" name="sus10" value="4" onchange="highlightSelected('sus10')"> 4：ややそう思う</label>
-    <label><input type="radio" name="sus10" value="3" onchange="highlightSelected('sus10')"> 3：どちらともいえない</label>
-    <label><input type="radio" name="sus10" value="2" onchange="highlightSelected('sus10')"> 2：あまりそう思わない</label>
-    <label><input type="radio" name="sus10" value="1" onchange="highlightSelected('sus10')"> 1：まったくそう思わない</label>
-  </div>
+      <div class="q-block">
+        <label class="q-label">SUS1. この「フォーム」は頻繁に利用したいと思う</label>
+        <div class="radio-group sus-row" id="sus1">
+          <label><input type="radio" name="sus1" value="5" onchange="highlightSelected('sus1')"> 5：強くそう思う</label>
+          <label><input type="radio" name="sus1" value="4" onchange="highlightSelected('sus1')"> 4：ややそう思う</label>
+          <label><input type="radio" name="sus1" value="3" onchange="highlightSelected('sus1')"> 3：どちらともいえない</label>
+          <label><input type="radio" name="sus1" value="2" onchange="highlightSelected('sus1')"> 2：あまりそう思わない</label>
+          <label><input type="radio" name="sus1" value="1" onchange="highlightSelected('sus1')"> 1：まったくそう思わない</label>
+        </div>
+      </div>
+      <div class="q-block">
+        <label class="q-label">SUS2. この「フォーム」は必要以上に複雑だと感じた
+          <span style="font-size:0.78em; font-weight:normal; color:#888; display:block; margin-top:4px;">
+            ※「必要以上の複雑」とは、「このフォームの目的を達成するためにやむを得ないと思われる複雑さ」ということ
+          </span>
+        </label>
+        <div class="radio-group sus-row" id="sus2">
+          <label><input type="radio" name="sus2" value="5" onchange="highlightSelected('sus2')"> 5：強くそう思う</label>
+          <label><input type="radio" name="sus2" value="4" onchange="highlightSelected('sus2')"> 4：ややそう思う</label>
+          <label><input type="radio" name="sus2" value="3" onchange="highlightSelected('sus2')"> 3：どちらともいえない</label>
+          <label><input type="radio" name="sus2" value="2" onchange="highlightSelected('sus2')"> 2：あまりそう思わない</label>
+          <label><input type="radio" name="sus2" value="1" onchange="highlightSelected('sus2')"> 1：まったくそう思わない</label>
+        </div>
+      </div>
+      <div class="q-block">
+        <label class="q-label">SUS3. この「フォーム」は使いやすいと思った</label>
+        <div class="radio-group sus-row" id="sus3">
+          <label><input type="radio" name="sus3" value="5" onchange="highlightSelected('sus3')"> 5：強くそう思う</label>
+          <label><input type="radio" name="sus3" value="4" onchange="highlightSelected('sus3')"> 4：ややそう思う</label>
+          <label><input type="radio" name="sus3" value="3" onchange="highlightSelected('sus3')"> 3：どちらともいえない</label>
+          <label><input type="radio" name="sus3" value="2" onchange="highlightSelected('sus3')"> 2：あまりそう思わない</label>
+          <label><input type="radio" name="sus3" value="1" onchange="highlightSelected('sus3')"> 1：まったくそう思わない</label>
+        </div>
+      </div>
+      <div class="q-block">
+        <label class="q-label">SUS4. 私がこの「フォーム」を使えるようになるためには、技術者のサポートが必要だと思う</label>
+        <div class="radio-group sus-row" id="sus4">
+          <label><input type="radio" name="sus4" value="5" onchange="highlightSelected('sus4')"> 5：強くそう思う</label>
+          <label><input type="radio" name="sus4" value="4" onchange="highlightSelected('sus4')"> 4：ややそう思う</label>
+          <label><input type="radio" name="sus4" value="3" onchange="highlightSelected('sus4')"> 3：どちらともいえない</label>
+          <label><input type="radio" name="sus4" value="2" onchange="highlightSelected('sus4')"> 2：あまりそう思わない</label>
+          <label><input type="radio" name="sus4" value="1" onchange="highlightSelected('sus4')"> 1：まったくそう思わない</label>
+        </div>
+      </div>
+      <div class="q-block">
+        <label class="q-label">SUS5. この「フォーム」の様々な機能は、お互いによく連携されていると感じた</label>
+        <div class="radio-group sus-row" id="sus5">
+          <label><input type="radio" name="sus5" value="5" onchange="highlightSelected('sus5')"> 5：強くそう思う</label>
+          <label><input type="radio" name="sus5" value="4" onchange="highlightSelected('sus5')"> 4：ややそう思う</label>
+          <label><input type="radio" name="sus5" value="3" onchange="highlightSelected('sus5')"> 3：どちらともいえない</label>
+          <label><input type="radio" name="sus5" value="2" onchange="highlightSelected('sus5')"> 2：あまりそう思わない</label>
+          <label><input type="radio" name="sus5" value="1" onchange="highlightSelected('sus5')"> 1：まったくそう思わない</label>
+        </div>
+      </div>
+      <div class="q-block">
+        <label class="q-label">SUS6. この「フォーム」には一貫性がなさすぎると思った</label>
+        <div class="radio-group sus-row" id="sus6">
+          <label><input type="radio" name="sus6" value="5" onchange="highlightSelected('sus6')"> 5：強くそう思う</label>
+          <label><input type="radio" name="sus6" value="4" onchange="highlightSelected('sus6')"> 4：ややそう思う</label>
+          <label><input type="radio" name="sus6" value="3" onchange="highlightSelected('sus6')"> 3：どちらともいえない</label>
+          <label><input type="radio" name="sus6" value="2" onchange="highlightSelected('sus6')"> 2：あまりそう思わない</label>
+          <label><input type="radio" name="sus6" value="1" onchange="highlightSelected('sus6')"> 1：まったくそう思わない</label>
+        </div>
+      </div>
+      <div class="q-block">
+        <label class="q-label">SUS7. ほとんどの人はこの「フォーム」をすぐに使いこなせるようになると思う</label>
+        <div class="radio-group sus-row" id="sus7">
+          <label><input type="radio" name="sus7" value="5" onchange="highlightSelected('sus7')"> 5：強くそう思う</label>
+          <label><input type="radio" name="sus7" value="4" onchange="highlightSelected('sus7')"> 4：ややそう思う</label>
+          <label><input type="radio" name="sus7" value="3" onchange="highlightSelected('sus7')"> 3：どちらともいえない</label>
+          <label><input type="radio" name="sus7" value="2" onchange="highlightSelected('sus7')"> 2：あまりそう思わない</label>
+          <label><input type="radio" name="sus7" value="1" onchange="highlightSelected('sus7')"> 1：まったくそう思わない</label>
+        </div>
+      </div>
+      <div class="q-block">
+        <label class="q-label">SUS8. この「フォーム」はとても使いづらいと感じた</label>
+        <div class="radio-group sus-row" id="sus8">
+          <label><input type="radio" name="sus8" value="5" onchange="highlightSelected('sus8')"> 5：強くそう思う</label>
+          <label><input type="radio" name="sus8" value="4" onchange="highlightSelected('sus8')"> 4：ややそう思う</label>
+          <label><input type="radio" name="sus8" value="3" onchange="highlightSelected('sus8')"> 3：どちらともいえない</label>
+          <label><input type="radio" name="sus8" value="2" onchange="highlightSelected('sus8')"> 2：あまりそう思わない</label>
+          <label><input type="radio" name="sus8" value="1" onchange="highlightSelected('sus8')"> 1：まったくそう思わない</label>
+        </div>
+      </div>
+      <div class="q-block">
+        <label class="q-label">SUS9. この「フォーム」を使う自信が持てた</label>
+        <div class="radio-group sus-row" id="sus9">
+          <label><input type="radio" name="sus9" value="5" onchange="highlightSelected('sus9')"> 5：強くそう思う</label>
+          <label><input type="radio" name="sus9" value="4" onchange="highlightSelected('sus9')"> 4：ややそう思う</label>
+          <label><input type="radio" name="sus9" value="3" onchange="highlightSelected('sus9')"> 3：どちらともいえない</label>
+          <label><input type="radio" name="sus9" value="2" onchange="highlightSelected('sus9')"> 2：あまりそう思わない</label>
+          <label><input type="radio" name="sus9" value="1" onchange="highlightSelected('sus9')"> 1：まったくそう思わない</label>
+        </div>
+      </div>
+      <div class="q-block" style="margin-bottom:0;">
+        <label class="q-label">SUS10. 私がこの「フォーム」を使う際には、多くのことを学ぶ必要があった</label>
+        <div class="radio-group sus-row" id="sus10">
+          <label><input type="radio" name="sus10" value="5" onchange="highlightSelected('sus10')"> 5：強くそう思う</label>
+          <label><input type="radio" name="sus10" value="4" onchange="highlightSelected('sus10')"> 4：ややそう思う</label>
+          <label><input type="radio" name="sus10" value="3" onchange="highlightSelected('sus10')"> 3：どちらともいえない</label>
+          <label><input type="radio" name="sus10" value="2" onchange="highlightSelected('sus10')"> 2：あまりそう思わない</label>
+          <label><input type="radio" name="sus10" value="1" onchange="highlightSelected('sus10')"> 1：まったくそう思わない</label>
+        </div>
       </div>
     </div><!-- /sus-section -->
 
@@ -917,6 +494,7 @@ button:active { transform: scale(0.97); }
     </div>
   </div>
 </div>
+
 <!-- 感謝メッセージモーダル -->
 <div class="thank-modal-overlay" id="thankModal">
   <div class="thank-modal">
@@ -933,7 +511,7 @@ button:active { transform: scale(0.97); }
     <div class="thank-reply-box">
       📧 返信先：<span class="reply-email" id="thank-reply-email"></span>
     </div>
-        <p id="close-countdown-wrap" style="font-size:0.82em; color:#888; margin-bottom:12px;">
+    <p id="close-countdown-wrap" style="font-size:0.82em; color:#888; margin-bottom:12px;">
       <span id="close-countdown">30</span> 秒後に自動的に閉じます
     </p>
     <div class="thank-btn-row">
@@ -943,718 +521,6 @@ button:active { transform: scale(0.97); }
   </div>
 </div>
 
-<script>
-// ============================================================
-//  設定
-// ============================================================
-const MAIL_TO = 'ns.morizo@gmail.com';
-let startTime = null;
-  ['sq1','sq2','sq4','sq5','sq6_scale'].forEach(n => document.querySelectorAll(`input[name="${n}"]`).forEach(r => r.checked = false));
-  document.querySelectorAll('input[name="sq3"]').forEach(r => r.checked = false);
-  for (let i = 1; i <= 10; i++) document.querySelectorAll(`input[name="sus${i}"]`).forEach(r => r.checked = false);
-  const sq6el = document.getElementById('sq6'); if (sq6el) sq6el.value = '';
-  document.querySelectorAll('#surveyModal .radio-group label, #surveyModal .check-group label').forEach(l => l.classList.remove('selected'));
-
-const NAME_NG_WORDS = ['匿名', '無記名', 'anonymous', 'anon', '名無し', 'なし', 'ない', 'none', 'no name'];
-
-// ============================================================
-//  UI要素の表示・非表示ヘルパー
-// ============================================================
-const FORM_UI_IDS = ['stepper', 'progressWrap', 'navigator', 'ideaForm'];
-
-function hideFormUI() {
-  FORM_UI_IDS.forEach(id => { document.getElementById(id).style.display = 'none'; });
-}
-function showFormUI() {
-  FORM_UI_IDS.forEach(id => { document.getElementById(id).style.display = ''; });
-}
-
-// ============================================================
-//  ステップ管理
-// ============================================================
-let currentStep = 0;
-const TOTAL_STEPS = 5;
-
-const NAV_MESSAGES = [
-  'こんにちは！現場のアイデアやお困りごとを教えてください。<br>まず、<strong>あなたの基本情報</strong>から始めましょう。気軽に入力してください😊',
-  'ありがとうございます！✨<br>次は<strong>現場で困っていること</strong>を教えてください。「誰が」「どんな頻度で」困っているかを、思いつくまま教えてもらえると助かります。',
-  'よく伝わってきます！👍<br>次は<strong>今どのように対応しているか</strong>を教えてください。「とりあえずこうしている」という工夫も、立派な情報です。',
-  'ここからが一番の見どころです！💡<br><strong>あなたが思い描くアイデア</strong>を聞かせてください。どんな小さなひらめきでも大歓迎。完成していなくて大丈夫です！',
-  'アイデア、ありがとうございます！🎉<br>最後に<strong>どんな効果が期待できそうか</strong>を教えてください。数値で書けるとより伝わりやすいですが、感覚的な表現でも問題ありません。'
-];
-
-function showStep(step) {
-  document.querySelectorAll('.block').forEach((b, i) => {
-    b.classList.toggle('active', i === step);
-  });
-  for (let i = 0; i < TOTAL_STEPS; i++) {
-    const sc = document.getElementById(`sc${i}`);
-    const sl = document.getElementById(`sl${i}`);
-    sc.className = 'step-circle';
-    sl.className = 'step-label';
-    if (i < step)        { sc.classList.add('done'); sc.innerHTML = '<span class="check-anim">✓</span>'; }
-    else if (i === step) { sc.classList.add('active'); sc.textContent = i + 1; sl.classList.add('active'); }
-    else                 { sc.textContent = i + 1; }
-    if (i < TOTAL_STEPS - 1) {
-      document.getElementById(`line${i}`).className = 'step-line' + (i < step ? ' done' : '');
-    }
-  }
-  document.getElementById('navBubble').innerHTML = NAV_MESSAGES[step];
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-  currentStep = step;
-}
-
-// ============================================================
-//  ステップ検証
-// ============================================================
-function isNGName(val) {
-  return NAME_NG_WORDS.some(w => val.toLowerCase() === w.toLowerCase());
-}
-
-const STEP_REQUIRED = [
-  () => {
-    const errs = [];
-    if (!getVal('q1')) errs.push('Q1 所属部署');
-    const nameVal = getVal('q2');
-    if (!nameVal) {
-      errs.push('Q2 氏名');
-    } else if (isNGName(nameVal)) {
-      errs.push('Q2 氏名（匿名での受付はできません。お名前をご記入ください）');
-    }
-    const emailVal = getVal('q2b');
-    if (!emailVal) {
-      errs.push('Q2-b 返信用メールアドレス');
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal)) {
-      errs.push('Q2-b メールアドレスの形式が正しくありません');
-    }
-    if (!getRadio('q3')) errs.push('Q3 職種');
-    return errs;
-  },
-  () => {
-    const errs = [];
-    if (!getRadio('q4'))              errs.push('Q4 困っている対象');
-    if (!getRadio('q5'))              errs.push('Q5 発生頻度');
-    if (getChecks('q6').length === 0) errs.push('Q6 困りごと・影響');
-    return errs;
-  },
-  () => [],
-  () => {
-    const errs = [];
-    if (!getVal('q10'))   errs.push('Q10 アイデア');
-    if (!getRadio('q11')) errs.push('Q11 カテゴリー');
-    return errs;
-  },
-  () => {
-    const errs = [];
-    if (getChecks('q12').length === 0) errs.push('Q12 期待できる効果');
-    return errs;
-  }
-];
-
-function goNext(step) {
-  const errs = STEP_REQUIRED[step]();
-  if (errs.length > 0) {
-    alert('⚠️ 以下の必須項目を確認してください：\n\n' + errs.join('\n'));
-    return;
-  }
-  sendLog('step_moved', step + 2);  // ← 現在ステップ(0始まり) + 2 = 1始まりの次ステップ
-  showStep(step + 1);
-}
-function goPrev(step) { showStep(step - 1); }
-
-// ============================================================
-//  ユーティリティ
-// ============================================================
-function getVal(id)    { return (document.getElementById(id)||{value:''}).value.trim(); }
-function getRadio(nm)  { const el = document.querySelector(`input[name="${nm}"]:checked`); return el ? el.value : ''; }
-function getChecks(nm) { return [...document.querySelectorAll(`input[name="${nm}"]:checked`)].map(e=>e.value); }
-
-function getQ6Values() {
-  return getChecks('q6').map(v => {
-    if (v === 'その他') {
-      const other = getVal('q6-other-text');
-      return other ? `その他（${other}）` : 'その他';
-    }
-    return v;
-  });
-}
-function getQ12Values() {
-  return getChecks('q12').map(v => {
-    if (v === 'その他') {
-      const other = getVal('q12-other-text');
-      return other ? `その他（${other}）` : 'その他';
-    }
-    return v;
-  });
-}
-
-function showFeedback(id, msg, type) {
-  const el = document.getElementById(`fb-${id}`);
-  if (!el) return;
-  el.textContent = msg;
-  el.className = `feedback-box feedback-${type} show`;
-}
-function hideFeedback(id) {
-  const el = document.getElementById(`fb-${id}`);
-  if (el) { el.className = 'feedback-box'; el.textContent = ''; }
-}
-function highlightSelected(groupId) {
-  document.querySelectorAll(`#${groupId} label`).forEach(lbl => {
-    lbl.classList.toggle('selected', lbl.querySelector('input').checked);
-  });
-}
-function highlightChecked(groupId) {
-  document.querySelectorAll(`#${groupId} label`).forEach(lbl => {
-    lbl.classList.toggle('selected', lbl.querySelector('input').checked);
-  });
-}
-function toggleOtherInput(checkId, wrapId) {
-  const checked = document.getElementById(checkId).checked;
-  const wrap = document.getElementById(wrapId);
-  wrap.classList.toggle('show', checked);
-  if (!checked) {
-    const ta = wrap.querySelector('textarea');
-    if (ta) ta.value = '';
-  }
-}
-
-// ============================================================
-//  プログレスバー（14項目）
-// ============================================================
-function updateProgress() {
-  if (!startTime) startTime = new Date();
-  const items = [
-    getVal('q1'), getVal('q2'), getVal('q2b'),
-    getRadio('q3'), getRadio('q4'),
-    getRadio('q5'), getChecks('q6').length > 0 ? '1' : '',
-    getVal('q7'), getVal('q8'), getChecks('q9').length > 0 ? '1' : '',
-    getVal('q10'), getRadio('q11'), getChecks('q12').length > 0 ? '1' : '', getVal('q13')
-  ];
-  const filled = items.filter(v => v !== '').length;
-  document.getElementById('progress-label').textContent = `${filled} / 14 項目入力済み`;
-  document.getElementById('progressFill').style.width = `${Math.round(filled / 14 * 100)}%`;
-}
-document.addEventListener('change', updateProgress);
-document.addEventListener('input',  updateProgress);
-
-// ============================================================
-//  フィードバック関数群
-// ============================================================
-function onSelectChange(id) {
-  const v = getVal(id);
-  if (v) showFeedback(id, `✅ 「${v}」で登録します！`, 'good');
-  else   hideFeedback(id);
-}
-
-function onTextInput(id) {
-  const v = getVal(id);
-  if (!v) { hideFeedback(id); return; }
-  if (isNGName(v)) {
-    showFeedback(id, '⚠️ 匿名での受付はできません。お名前をフルネームでご記入ください。', 'neutral');
-    return;
-  }
-  if (v.length < 2) {
-    showFeedback(id, '✏️ お名前をフルネームでご記入ください。', 'neutral');
-    return;
-  }
-  showFeedback(id, `✅ ${v} さん、よろしくお願いします！`, 'good');
-}
-
-function onEmailInput(id) {
-  const v = getVal(id);
-  if (!v) { hideFeedback(id); return; }
-  const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
-  if (isEmail) {
-    showFeedback(id, `✅ 「${v}」に検討結果をお送りします！`, 'good');
-  } else {
-    showFeedback(id, '⚠️ メールアドレスの形式を確認してください（例：yamada@example.com）', 'neutral');
-  }
-}
-
-function onRadioChange(name) {
-  highlightSelected(name);
-  const v = getRadio(name);
-  const feedbackMap = {
-    q3: {
-      '医師':'🩺 医師の目線でのアイデア、大変参考になります！',
-      '看護師':'💉 看護師さんの現場感覚には、大切な気づきがたくさんあります！',
-      '薬剤師':'💊 薬剤師さんの専門的な視点が、解決のヒントになることも。',
-      '臨床工学技士':'⚙️ 機器・システム系のご意見も、ぜひ聞かせてください！',
-      '理学療法士・作業療法士':'🏃 リハビリ現場ならではの知恵、ぜひ教えてください！',
-      '事務職':'📋 事務・管理系の改善アイデアも、とても重要です！',
-      'その他':'👤 どんな立場からの声も、大切に受け取ります！'
-    },
-    q4: {
-      '患者さん':'🏥 患者さんのことを考えたアイデア、大切にします！',
-      '自分自身・自部署のスタッフ':'👥 現場で働く方々の声が、改善の出発点です！',
-      '他部署のスタッフ':'🤝 部署をまたいだ連携改善のきっかけになるかもしれません。',
-      '病院全体':'🏢 病院全体の仕組みを変えるアイデアは、大きな影響力があります！'
-    },
-    q5: {
-      '毎日複数回':'🔴 毎日複数回とは、かなり大変な状況ですね。早めの対策が必要そうです。',
-      '毎日1回程度':'🟠 毎日起きているなら、きちんと対処する必要がありますね。',
-      '週に数回':'🟡 週に数回でも、積み重なると大きな負担になりますね。',
-      '月に数回':'🟢 頻度は低くても、事前に対策しておく価値はあります。',
-      '稀だが発生すると重大':'⚠️ 起きたときの影響が大きいなら、優先度の高い課題です！'
-    },
-    q11: {
-      '医療機器・器具の新規開発や改良':'🔧 機器・器具系のアイデアですね！専門担当者と一緒に検討します。',
-      'アプリ・RPAによる業務自動化・電子化':'💻 デジタル化・自動化のアイデアですね！情報システム担当と連携します。',
-      '既存製品の新しい使い方（転用・適応外使用など）':'♻️ 既存品の新しい活用方法ですね！薬事確認も含めて検討します。',
-      '運用ルールやマニュアルの変更':'📄 運用の見直しですね。比較的早く実行できる可能性があります！'
-    }
-  };
-  const msg = (feedbackMap[name] || {})[v];
-  if (msg) showFeedback(name, msg, 'good');
-}
-
-function onCheckChange(name) {
-  highlightChecked(name);
-  const checks = getChecks(name);
-  if (name === 'q6') {
-    if (checks.length === 0) { hideFeedback('q6'); return; }
-    const hasOther = checks.includes('その他');
-    if (checks.length === 1 && hasOther)
-      showFeedback('q6', '📝 下の欄に具体的な内容を記入してください。', 'tip');
-    else if (checks.length === 1)
-      showFeedback('q6', `✅ 「${checks[0]}」を選択しました。他にも当てはまるものがあれば追加してください。`, 'good');
-    else if (checks.length >= 3)
-      showFeedback('q6', `⚡ ${checks.length}つの問題が重なっているんですね。一つのアイデアで複数が改善されると、とても価値があります！`, 'tip');
-    else
-      showFeedback('q6', `✅ ${checks.length}つ選択済み。他にもあれば追加してください。`, 'good');
-  }
-  if (name === 'q9') {
-    if (checks.length === 0) { hideFeedback('q9'); return; }
-    showFeedback('q9', `✅ ${checks.length}つ選択。今の対応の限界がよくわかります。その分、改善の余地が大きいですね！`, 'good');
-  }
-  if (name === 'q12') {
-    if (checks.length === 0) { hideFeedback('q12'); return; }
-    const hasOther = checks.includes('その他');
-    if (checks.length === 1 && hasOther)
-      showFeedback('q12', '📝 下の欄に期待される効果を記入してください。', 'tip');
-    else if (checks.length === 1)
-      showFeedback('q12', `✅ 「${checks[0]}」を選択。この効果を目標に、一緒に検討を進めます！`, 'good');
-    else if (checks.length >= 3)
-      showFeedback('q12', `🚀 ${checks.length}つの改善効果が期待できる、インパクトの大きいアイデアですね！`, 'good');
-    else
-      showFeedback('q12', `✅ ${checks.length}つの改善効果を見込んでいます！`, 'good');
-  }
-}
-
-function onTextareaInput(id) {
-  const v = getVal(id); if (!v) { hideFeedback(id); return; }
-  const len = v.length;
-  if (id === 'q7') {
-    if (len < 20)      showFeedback('q7', '✏️ もう少し詳しく教えてもらえますか？「いつ・どこで・誰が・何が起きる」を意識すると伝わりやすいです。', 'neutral');
-    else if (len < 50) showFeedback('q7', '📝 いい感じです！もう少し具体的な状況を加えると、より伝わりやすくなります。', 'tip');
-    else               showFeedback('q7', '✅ 具体的で分かりやすい場面の説明です！', 'good');
-  }
-  if (id === 'q8') {
-    if (len < 15) showFeedback('q8', '✏️ 現在の対応を少し詳しく教えてください。', 'neutral');
-    else          showFeedback('q8', '✅ 今の工夫がよく伝わります。ありがとうございます！', 'good');
-  }
-  if (id === 'q13') {
-    const hasNum = /[0-9０-９]/.test(v);
-    if (hasNum) showFeedback('q13', '🎯 数値が入っていますね！具体的な目標があると、検討がしやすくなります。', 'good');
-    else        showFeedback('q13', '💬 感覚的な表現でも大丈夫です。数値があるとさらに伝わりやすいですよ！', 'tip');
-  }
-}
-
-function onIdeaInput() {
-  const v = getVal('q10');
-  if (!v) { hideFeedback('q10'); return; }
-  const len = v.length;
-  if (len < 20)      showFeedback('q10', '✏️ もう少し詳しく教えてください。どんなアイデアでも歓迎します！', 'neutral');
-  else if (len < 80) showFeedback('q10', '📝 いい感じです！もう少し具体的なイメージを加えると、さらに伝わりやすくなります。', 'tip');
-  else               showFeedback('q10', '✅ 素晴らしいアイデアですね！具体的で伝わりやすいです。', 'good');
-}
-
-// ============================================================
-//  テキスト生成（メール本文用）
-// ============================================================
-function buildText() {
-  const q6v  = getQ6Values();
-  const q9v  = getChecks('q9');
-  const q12v = getQ12Values();
-  const endTime = new Date();
-  const diffMs  = startTime ? endTime - startTime : 0;
-  const mins    = Math.floor(diffMs / 60000);
-  const secs    = Math.floor((diffMs % 60000) / 1000);
-  const elapsed = startTime ? `${mins}分${secs}秒` : '不明';
-  const lines = [
-    '━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
-    '　医療をよくするアイデア提案フォーム　',
-    '━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
-    '',
-　　'【研究参加同意】',
-　　`私、${getVal('q2') || '（氏名未記入）'}は、本研究の目的を理解し、参加に同意します。`,
-　　'',
-    '【基本情報】',
-    `所属部署　　　：${getVal('q1') || '（未選択）'}`,
-    `氏　　名　　　：${getVal('q2') || '（未記入）'}`,
-    `メールアドレス：${getVal('q2b') || '（未記入）'}`,
-    `職　　種　　　：${getRadio('q3') || '（未選択）'}`,
-    '',
-    '【P：現場の困りごと・背景】',
-    `困っている対象：${getRadio('q4') || '（未選択）'}`,
-    `発生頻度　　　：${getRadio('q5') || '（未選択）'}`,
-    `困りごと・影響：${q6v.join(' / ') || '（未選択）'}`,
-    `具体的な場面　：${getVal('q7') || '（未記入）'}`,
-    '',
-    '【C：今の対応とその限界】',
-    `現在の対応　　　　：${getVal('q8') || '（未記入）'}`,
-    `うまくいっていない点：${q9v.length ? q9v.join(' / ') : '特になし'}`,
-    '',
-    '【I：アイデア・ひらめき】',
-    `アイデア内容：${getVal('q10') || '（未記入）'}`,
-    `カテゴリー　：${getRadio('q11') || '（未選択）'}`,
-    '',
-    '【O：期待できる効果】',
-    `期待される改善：${q12v.join(' / ') || '（未選択）'}`,
-    `改善の規模感　：${getVal('q13') || '（未記入）'}`,
-    '',
-    '━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
-    `送信日時　　　　：${endTime.toLocaleString('ja-JP')}`,
-    `レポート作成時間：${elapsed}`,
-    '━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
-  ];
-  const sq1v = getSurveyRadio('sq1');
-  if (sq1v !== '（未回答）') {
-    lines.splice(lines.length - 1, 0,
-      '',
-      '━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
-      '　アンケート回答　',
-      '━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
-      '',
-      `SQ1．使いやすさ　　　　　：${getSurveyRadio('sq1')}`,
-      `SQ2．整理・具体化への貢献：${getSurveyRadio('sq2')}`,
-      `SQ3．役立った部分　　　　：${getSurveyChecks('sq3')}`,
-      `SQ4．入力の手間　　　　　：${getSurveyRadio('sq4')}`,
-      `SQ5．意欲（動機）　　　　：${getSurveyRadio('sq5')}`,
-      `SQ6．自己効力感　　　　　：${getSurveyRadio('sq6_scale')}`,
-      `SQ6．改善点（自由記述）　：${getVal('sq6') || '（記入なし）'}`,
-      '',
-      '━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
-      '　SUS（システムユーザビリティスケール）　',
-      '━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
-      '',
-      `SUS1．頻繁に使いたい　　　　：${getSurveyRadio('sus1')}`,
-      `SUS2．不必要に複雑　　　　　：${getSurveyRadio('sus2')}`,
-      `SUS3．使いやすい　　　　　　：${getSurveyRadio('sus3')}`,
-      `SUS4．サポートが必要　　　　：${getSurveyRadio('sus4')}`,
-      `SUS5．機能がまとまっている　：${getSurveyRadio('sus5')}`,
-      `SUS6．一貫性がない　　　　　：${getSurveyRadio('sus6')}`,
-      `SUS7．すぐ使いこなせる　　　：${getSurveyRadio('sus7')}`,
-      `SUS8．使いにくい　　　　　　：${getSurveyRadio('sus8')}`,
-      `SUS9．自信を持てる　　　　　：${getSurveyRadio('sus9')}`,
-      `SUS10．覚えることが多かった：${getSurveyRadio('sus10')}`,
-      '',
-      `【SUSスコア合計】${getSusLabel(calculateSusScore())}`,
-      ''
-    );
-  }
-  return lines.join('\n');
-}
-
-// ============================================================
-//  CSV生成
-// ============================================================
-function escapeCSV(v) {
-  if (v == null) v = '';
-  v = String(v);
-  if (v.includes('"') || v.includes(',') || v.includes('\n') || v.includes('\r')) {
-    return '"' + v.replace(/"/g, '""') + '"';
-  }
-  return v;
-}
-
-function buildCsvText() {
-  const now = new Date();
-  const submissionId = now.toISOString().replace(/[-:T.Z]/g, '').slice(0, 15);
-  const submittedAt  = now.toLocaleString('ja-JP');
-  const q6v  = getQ6Values();
-  const q9v  = getChecks('q9');
-  const q12v = getQ12Values();
-  const diffMs = startTime ? now - startTime : 0;
-  const mins   = Math.floor(diffMs / 60000);
-  const secs   = Math.floor((diffMs % 60000) / 1000);
-  const elapsed = startTime ? `${mins}分${secs}秒` : '不明';
-  const rows = [['submissionid','submittedat','fieldname','value'].join(',')];
-  function addRow(fieldName, value) {
-    rows.push([escapeCSV(submissionId), escapeCSV(submittedAt), escapeCSV(fieldName), escapeCSV(value)].join(','));
-  }
-  addRow('q1_department',      getVal('q1'));
-  addRow('q2_name',            getVal('q2'));
-  addRow('q2b_email',          getVal('q2b'));
-  addRow('q3_occupation',      getRadio('q3'));
-  addRow('q4_who_suffers',     getRadio('q4'));
-  addRow('q5_frequency',       getRadio('q5'));
-  if (q6v.length > 0) { q6v.forEach((v, idx) => addRow(`q6_problem_${idx+1}`, v)); }
-  else addRow('q6_problem_1', '');
-  addRow('q7_scene',           getVal('q7'));
-  addRow('q8_current_workaround', getVal('q8'));
-  if (q9v.length > 0) { q9v.forEach((v, idx) => addRow(`q9_limitation_${idx+1}`, v)); }
-  else addRow('q9_limitation_1', '');
-  addRow('q10_idea',           getVal('q10'));
-  addRow('q11_category',       getRadio('q11'));
-  if (q12v.length > 0) { q12v.forEach((v, idx) => addRow(`q12_outcome_${idx+1}`, v)); }
-  else addRow('q12_outcome_1', '');
-  addRow('q13_expected_improvement', getVal('q13'));
-  addRow('report_creation_time', elapsed);
-  addRow('sq1_usability',    getSurveyRadio('sq1'));
-  addRow('sq2_structuring',  getSurveyRadio('sq2'));
-  addRow('sq3_helpful',      getSurveyChecks('sq3'));
-  addRow('sq4_effort',       getSurveyRadio('sq4'));
-  addRow('sq5_motivation',   getSurveyRadio('sq5'));
-  addRow('sq6_self_efficacy', getSurveyRadio('sq6_scale'));
-  addRow('sq6_improvement',  getVal('sq6'));
-  for (let i = 1; i <= 10; i++) addRow(`sus${i}`, getSurveyRadio(`sus${i}`));
-  const susScore = calculateSusScore();
-  addRow('sus_score', susScore !== null ? susScore : '（未回答）');
-
-  return rows.join('\n');
-}
-
-// ============================================================
-//  メール送信
-// ============================================================
-function sendMail() {
-  const humanText = buildText();
-  const csvText   = buildCsvText();
-  const fullBody  = humanText + '\n\n\n--- CSV形式（システム取込用） ---\n' + csvText;
-  const subject = encodeURIComponent(`【アイデア提案】${getVal('q2')}（${getVal('q1')}）`);
-  const body    = encodeURIComponent(fullBody);
-  formCompleted = true;
-  window.location.href = `mailto:${MAIL_TO}?subject=${subject}&body=${body}`;
-}
-
-function submitAll() {
-  // アンケート必須バリデーション（SQ1〜SQ5はラジオ、SQ3はチェックボックス）
-  const missing = [];
-  ['sq1','sq2','sq4','sq5','sq6_scale'].forEach(name => {
-    if (!document.querySelector(`input[name="${name}"]:checked`)) {
-      missing.push(name === 'sq6_scale' ? 'SQ6（自己効力感）' : name.toUpperCase());
-    }
-  });
-  if (document.querySelectorAll('input[name="sq3"]:checked').length === 0) {
-    missing.push('SQ3');
-  }
-  if (missing.length > 0) {
-    alert('以下の項目を入力してください：\n' + missing.join(', '));
-    return;
-  }
-  document.getElementById('surveyModal').classList.remove('active');
-  sendLog('survey_completed', 6);  // ← この1行を追加
-  sendMail();
-  showThankModal();
-  startCloseCountdown(30);
-}
-
-// ============================================================
-//  自動終了カウントダウン（sendMail後に呼び出す）
-// ============================================================
-function startCloseCountdown(seconds) {
-  let remaining = seconds;
-  const countdownEl = document.getElementById('close-countdown');
-  if (countdownEl) countdownEl.textContent = remaining;
-
-  const timer = setInterval(() => {
-    remaining--;
-    if (countdownEl) countdownEl.textContent = remaining;
-    if (remaining <= 0) {
-      clearInterval(timer);
-
-      // ① まず window.close() を試みる（スクリプトで開かれた場合に有効）
-      window.close();
-
-      // ② 300ms 後も閉じられなかった場合 → 終了画面を表示
-      setTimeout(() => {
-        const thankModal = document.getElementById('thankModal');
-        if (thankModal && thankModal.classList.contains('active')) {
-          thankModal.classList.remove('active');
-          closeThankModal();
-          showEndScreen();
-        }
-      }, 300);
-    }
-  }, 1000);
-}
-
-// ============================================================
-//  プレビュー表示
-// ============================================================
-function showPreview() {
-  const errs = STEP_REQUIRED[4]();
-  if (errs.length > 0) {
-    alert('⚠️ 以下の必須項目を確認してください：\n\n' + errs.join('\n'));
-    return;
-  }
-  document.getElementById('previewText').textContent = buildText();
-  const idea     = getVal('q10');
-  const who      = getRadio('q4');
-  const freq     = getRadio('q5');
-  const category = getRadio('q11');
-  const outcomes = getQ12Values();
-  if (idea && who && category && outcomes.length > 0) {
-    const picoText = [
-      `<b>P</b>（対象・背景）：${who}が${freq}`,
-      `<b>I</b>（介入・アイデア）：${idea.slice(0,120)}${idea.length>120?'…':''}`,
-      `<b>C</b>（比較・現状）：${getVal('q8') || '現在の対応'}`,
-      `<b>O</b>（期待する成果）：${outcomes.join('、')}`
-    ].join('<br><br>');
-    document.getElementById('picoContent').innerHTML = picoText;
-    document.getElementById('picoBox').style.display = 'block';
-  } else {
-    document.getElementById('picoBox').style.display = 'none';
-  }
-  document.getElementById('previewModal').classList.add('active');
-}
-
-function closePreviewModal() {
-  document.getElementById('previewModal').classList.remove('active');
-}
-
-// ============================================================
-//  感謝モーダル
-// ============================================================
-function showThankModal() {
-  const name  = getVal('q2');
-  const email = getVal('q2b');
-  document.getElementById('thank-name-label').textContent  = name;
-  document.getElementById('thank-reply-email').textContent = email;
-  document.getElementById('thankModal').classList.add('active');
-}
-function closeThankModal() {
-  document.getElementById('thankModal').classList.remove('active');
-}
-function closePreviewAndThank() {
-  closePreviewModal();
-  showThankModal();
-}
-
-// ============================================================
-//  新規アイデア・リセット
-// ============================================================
-function startNewIdea() {
-  closeThankModal();
-  resetForm();
-}
-
-function resetForm() {
-  document.getElementById('ideaForm').reset();
-  document.querySelectorAll('.feedback-box').forEach(el => {
-    el.className = 'feedback-box'; el.textContent = '';
-  });
-  document.querySelectorAll('.radio-group label, .check-group label').forEach(lbl => {
-    lbl.classList.remove('selected');
-  });
-  document.querySelectorAll('.other-input-wrap').forEach(w => {
-    w.classList.remove('show');
-    const ta = w.querySelector('textarea');
-    if (ta) ta.value = '';
-  });
-  startTime = null;
-  showFormUI();
-  document.getElementById('endScreen').classList.remove('active');
-  showStep(0);
-  updateProgress();
-}
-
-// ============================================================
-//  終了画面
-// ============================================================
-function showEndScreen() {
-  if (!formCompleted) sendLog('abandoned_end_btn', currentStep+ 1);
-  hideFormUI();
-  document.getElementById('endScreen').classList.add('active');
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-function restartFromEnd() {
-  document.getElementById('endScreen').classList.remove('active');
-  resetForm();
-}
-// ============================================================
-//  GAS トラッキング
-// ============================================================
-const GAS_URL = 'https://script.google.com/macros/s/AKfycbx5Cf97A3SUGcfb8F3l87unhhSgjoo7TGZ1ozyRdk2JFGlxmJF9SxQN06QtjtJbJ5RV/exec';
-
-const _urlParams  = new URLSearchParams(window.location.search);
-const SESSION_ID  = _urlParams.get('sid') || 'direct_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-const FORM_TYPE   = _urlParams.get('ft')  || 'A';
-
-let formCompleted = false;
-
-function sendLog(status, step) {
-  var payload = {
-    timestamp:  new Date().toISOString(),
-    form_type:  FORM_TYPE,
-    last_step:  step,
-    status:     status,
-    session_id: SESSION_ID
-  };
-  fetch(GAS_URL, {
-    method:    'POST',
-    body:      JSON.stringify(payload),
-    keepalive: true
-  }).catch(function() {});
-}
-
-sendLog('form_opened', 1);
-
-document.addEventListener('visibilitychange', function() {
-  if (document.visibilityState === 'hidden' && !formCompleted) {
-    sendLog('abandoned', currentStep + 1);
-  }
-});
-
-// ============================================================
-//  SUSスコア計算
-// ============================================================
-function getSusRadio(nm) {
-  const el = document.querySelector(`input[name="${nm}"]:checked`);
-  return el ? parseInt(el.value) : null;
-}
-function calculateSusScore() {
-  const scores = [];
-  for (let i = 1; i <= 10; i++) {
-    const v = getSusRadio('sus' + i);
-    if (v === null) return null;
-    scores.push(v);
-  }
-  let total = 0;
-  for (let i = 0; i < 10; i++) {
-    total += (i % 2 === 0) ? scores[i] - 1 : 5 - scores[i];
-  }
-  return total * 2.5;
-}
-function getSusLabel(score) {
-  if (score === null) return '（未回答）';
-  if (score >= 85) return `${score}点（A：卓越した使いやすさ）`;
-  if (score >= 80) return `${score}点（B：優れた使いやすさ）`;
-  if (score >= 68) return `${score}点（C：平均的・合格水準）`;
-  if (score >= 51) return `${score}点（D：改善が必要）`;
-  return `${score}点（F：使いにくい）`;
-}
-
-// ============================================================
-//  アンケート用ヘルパー
-// ============================================================
-function getSurveyRadio(name) {
-  const el = document.querySelector(`input[name="${name}"]:checked`);
-  return el ? el.value : '（未回答）';
-}
-function getSurveyChecks(name) {
-  const els = document.querySelectorAll(`input[name="${name}"]:checked`);
-  return els.length > 0 ? Array.from(els).map(e => e.value).join(' / ') : '（未選択）';
-}
-function showSurveyFromPreview() {
-  closePreviewModal();
-  sendLog('completed', 5);   // ← 追加：step5完了を記録
-  formCompleted = true;       // ← 追加：離脱検知を抑制
-  document.getElementById('surveyModal').classList.add('active');
-}
-  
-</script>
+<script src="script.js"></script>
 </body>
 </html>
