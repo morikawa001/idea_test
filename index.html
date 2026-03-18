@@ -306,11 +306,169 @@
 <!-- アンケートモーダル -->
 <div class="survey-modal-overlay" id="surveyModal">
   <div class="survey-modal">
-    <h2>📋 簡単なアンケートにご協力ください</h2>
-    <p style="font-size:0.85em;color:#666;margin-bottom:18px;">
-      アイデアのご提案ありがとうございました。<br>
-      フォームについて6問だけお答えください（約1〜2分）。回答後に送信されます。
-    </p>
+   <h2>📋 簡単なアンケートにご協力ください</h2>
+<p style="font-size:0.85em;color:#666;margin-bottom:18px;">
+  アイデアのご提案ありがとうございました。<br>
+  フォームの使いやすさやご自身のプロフィールについて、いくつか質問にお答えください（所要時間：約1〜2分）。<br>
+  回答後にアイデアが送信されます。
+</p>
+        <!-- 追加：SQ0a 年齢 -->
+    <div class="q-block">
+      <label class="q-label">SQ0-a. 年齢</label>
+      <div class="q-hint">ご自身の年齢を選択してください</div>
+      <select id="sq0_age">
+        <option value="">-- 選択してください --</option>
+        <!-- 20〜70歳 -->
+        <!-- 必要なら for 文で生成してもOK -->
+        <option>20歳</option>
+        <option>21歳</option>
+        <option>22歳</option>
+        <option>23歳</option>
+        <option>24歳</option>
+        <option>25歳</option>
+        <option>26歳</option>
+        <option>27歳</option>
+        <option>28歳</option>
+        <option>29歳</option>
+        <option>30歳</option>
+        <option>31歳</option>
+        <option>32歳</option>
+        <option>33歳</option>
+        <option>34歳</option>
+        <option>35歳</option>
+        <option>36歳</option>
+        <option>37歳</option>
+        <option>38歳</option>
+        <option>39歳</option>
+        <option>40歳</option>
+        <option>41歳</option>
+        <option>42歳</option>
+        <option>43歳</option>
+        <option>44歳</option>
+        <option>45歳</option>
+        <option>46歳</option>
+        <option>47歳</option>
+        <option>48歳</option>
+        <option>49歳</option>
+        <option>50歳</option>
+        <option>51歳</option>
+        <option>52歳</option>
+        <option>53歳</option>
+        <option>54歳</option>
+        <option>55歳</option>
+        <option>56歳</option>
+        <option>57歳</option>
+        <option>58歳</option>
+        <option>59歳</option>
+        <option>60歳</option>
+        <option>61歳</option>
+        <option>62歳</option>
+        <option>63歳</option>
+        <option>64歳</option>
+        <option>65歳</option>
+        <option>66歳</option>
+        <option>67歳</option>
+        <option>68歳</option>
+        <option>69歳</option>
+        <option>70歳</option>
+      </select>
+    </div>
+
+    <!-- 追加：SQ0b 経験年数 -->
+    <div class="q-block">
+      <label class="q-label">SQ0-b. 医療・関連業務の経験年数</label>
+      <div class="q-hint">現在の職種・類似業務の合計経験年数をおおよそで構いませんのでお選びください</div>
+      <select id="sq0_experience">
+        <option value="">-- 選択してください --</option>
+        <option>0年目（研修中・着任直後）</option>
+        <option>1年目</option>
+        <option>2年目</option>
+        <option>3年目</option>
+        <option>4年目</option>
+        <option>5年目</option>
+        <option>6年目</option>
+        <option>7年目</option>
+        <option>8年目</option>
+        <option>9年目</option>
+        <option>10年目</option>
+        <option>11年目</option>
+        <option>12年目</option>
+        <option>13年目</option>
+        <option>14年目</option>
+        <option>15年目</option>
+        <option>16年目</option>
+        <option>17年目</option>
+        <option>18年目</option>
+        <option>19年目</option>
+        <option>20年目</option>
+        <option>21年目</option>
+        <option>22年目</option>
+        <option>23年目</option>
+        <option>24年目</option>
+        <option>25年目</option>
+        <option>26年目</option>
+        <option>27年目</option>
+        <option>28年目</option>
+        <option>29年目</option>
+        <option>30年目</option>
+        <option>31年目</option>
+        <option>32年目</option>
+        <option>33年目</option>
+        <option>34年目</option>
+        <option>35年目</option>
+        <option>36年目</option>
+        <option>37年目</option>
+        <option>38年目</option>
+        <option>39年目</option>
+        <option>40年目</option>
+        <option>41年目</option>
+        <option>42年目</option>
+        <option>43年目</option>
+        <option>44年目</option>
+        <option>45年目</option>
+        <option>46年目</option>
+        <option>47年目</option>
+        <option>48年目</option>
+        <option>49年目</option>
+        <option>50年目以上</option>
+      </select>
+    </div>
+
+    <!-- 追加：SQ0-c IT機器・デジタルツールの使用経験（複数選択可） -->
+    <div class="q-block">
+      <label class="q-label">SQ0-c. IT機器・デジタルツールの使用経験（複数選択可）</label>
+      <div class="q-hint">
+        あてはまるものをすべて選んでください（業務・日常どちらも含みます）
+      </div>
+      <div class="check-group" id="sq0_it_group">
+        <label>
+          <input type="checkbox" name="sq0_it" value="メール・インターネット（Web閲覧）を利用している"
+                 onchange="highlightChecked('sq0_it_group')">
+          メール・インターネット（Web閲覧）を利用している
+        </label>
+        <label>
+          <input type="checkbox" name="sq0_it" value="電子カルテや院内システムを日常的に利用している"
+                 onchange="highlightChecked('sq0_it_group')">
+          電子カルテや院内システムを日常的に利用している
+        </label>
+        <label>
+          <input type="checkbox" name="sq0_it" value="スマートフォンアプリやクラウドサービスを業務で活用している"
+                 onchange="highlightChecked('sq0_it_group')">
+          スマートフォンアプリやクラウドサービスを業務で活用している
+        </label>
+        <label>
+          <input type="checkbox" name="sq0_it" value="表計算ソフト（Excel 等）で集計や資料作成を行っている"
+                 onchange="highlightChecked('sq0_it_group')">
+          表計算ソフト（Excel 等）で集計や資料作成を行っている
+        </label>
+        <label>
+          <input type="checkbox" name="sq0_it" value="プログラムやスクリプトを書いたり、システム設定を行ったことがある"
+                 onchange="highlightChecked('sq0_it_group')">
+          プログラムやスクリプトを書いたり、システム設定を行ったことがある
+        </label>
+      </div>
+    </div>
+    
     <div class="q-block">
       <label class="q-label">SQ1. フォームは使いやすかったですか</label>
       <div class="radio-group" id="sq1">
