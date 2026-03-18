@@ -280,6 +280,12 @@ function buildText() {
     `メールアドレス：${getVal('q2b') || '（未記入）'}`,
     `職　　種　　　：${getRadio('q3') || '（未選択）'}`,
     '',
+    '【回答者プロフィール（アンケート）】',
+    `年　　齢　　　：${getVal('sq0_age') || '（未選択）'}`,
+    `経験年数　　　：${getVal('sq0_experience') || '（未選択）'}`,
+    `IT使用経験　　：${getItExperienceChecks().join(' / ') || '（未選択）'}`,
+    `ITレベル評価　：${getItLevelLabel() || '（未評価）'}`,
+    '',
     '【P：現場の困りごと・背景】',
     `困っている対象：${getRadio('q4') || '（未選択）'}`,
     `発生頻度　　　：${getRadio('q5') || '（未選択）'}`,
@@ -385,6 +391,11 @@ function buildCsvText() {
   if (q12v.length > 0) { q12v.forEach((v, idx) => addRow(`q12_outcome_${idx+1}`, v)); }
   else addRow('q12_outcome_1', '');
   addRow('q13_expected_improvement', getVal('q13'));
+   // SQ0（プロフィール）
+  addRow('sq0_age',        getVal('sq0_age'));
+  addRow('sq0_experience', getVal('sq0_experience'));
+  addRow('sq0_it_items',   getItExperienceChecks().join(' / '));
+  addRow('sq0_it_level',   getItLevelLabel() || '（未評価）');
   addRow('report_creation_time', elapsed);
   addRow('sq1_usability',    getSurveyRadio('sq1'));
   addRow('sq2_structuring',  getSurveyRadio('sq2'));
@@ -414,6 +425,15 @@ function sendMail() {
 
 function submitAll() {
   const missing = [];
+  // SQ0-a, SQ0-b は必須
+  if (!getVal('sq0_age'))        missing.push('SQ0-a（年齢）');
+  if (!getVal('sq0_experience')) missing.push('SQ0-b（経験年数）');
+
+  // SQ0-c は「未回答なら注意メッセージだけ」にする場合は、missing には入れない
+  // if (getItExperienceChecks().length === 0) {
+  //   missing.push('SQ0-c（IT使用経験）');
+  // }
+
   ['sq1','sq2','sq4','sq5','sq6_scale'].forEach(name => {
     if (!document.querySelector(`input[name="${name}"]:checked`)) {
       missing.push(name === 'sq6_scale' ? 'SQ6（自己効力感）' : name.toUpperCase());
@@ -422,6 +442,7 @@ function submitAll() {
   if (document.querySelectorAll('input[name="sq3"]:checked').length === 0) {
     missing.push('SQ3');
   }
+
   if (missing.length > 0) {
     alert('以下の項目を入力してください：\n' + missing.join(', '));
     return;
@@ -534,6 +555,8 @@ function resetForm() {
   ['sq1','sq2','sq4','sq5','sq6_scale'].forEach(n =>
     document.querySelectorAll(`input[name="${n}"]`).forEach(r => r.checked = false));
   document.querySelectorAll('input[name="sq3"]').forEach(r => r.checked = false);
+  // SQ0-c IT経験のチェック解除
+  document.querySelectorAll('input[name="sq0_it"]').forEach(r => r.checked = false);
   for (let i = 1; i <= 10; i++)
     document.querySelectorAll(`input[name="sus${i}"]`).forEach(r => r.checked = false);
   const sq6el = document.getElementById('sq6'); if (sq6el) sq6el.value = '';
@@ -635,6 +658,37 @@ function getSurveyChecks(name) {
   const els = document.querySelectorAll(`input[name="${name}"]:checked`);
   return els.length > 0 ? Array.from(els).map(e => e.value).join(' / ') : '（未選択）';
 }
+
+// IT使用経験（SQ0-c）のチェックとレベル判定
+function getItExperienceChecks() {
+  return Array.from(document.querySelectorAll('input[name="sq0_it"]:checked'))
+    .map(e => e.value);
+}
+
+// ITレベル：初級／中級／上級（案Aのルール）
+// - チェックなし       → null（未回答扱い）
+// - 「メール・Web」だけ → 初級
+// - メール・Web ＋ 他1つ → 初級〜中級寄りだが、ここでは中級に含める
+// - 「電子カルテ」「スマホアプリ」「Excel」あたりが含まれる → 中級
+// - 「プログラム・スクリプト」含む → 上級
+function getItLevelLabel() {
+  const vals = getItExperienceChecks();
+  if (vals.length === 0) return null;
+
+  const hasMail   = vals.some(v => v.includes('メール・インターネット'));
+  const hasEmr    = vals.some(v => v.includes('電子カルテ'));
+  const hasApp    = vals.some(v => v.includes('スマートフォンアプリ'));
+  const hasExcel  = vals.some(v => v.includes('表計算ソフト'));
+  const hasProg   = vals.some(v => v.includes('プログラムやスクリプト'));
+
+  if (hasProg) return '上級';
+  if (hasExcel || hasApp || hasEmr) return '中級';
+  if (hasMail && vals.length === 1) return '初級';
+  if (hasMail && vals.length >= 2)  return '中級';
+  // その他の組み合わせは中級に寄せる
+  return '中級';
+}
+
 function showSurveyFromPreview() {
   closePreviewModal();
   sendLog('completed', 5);
