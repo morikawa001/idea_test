@@ -125,7 +125,7 @@ const STEP_REQUIRED = [
     if (!getRadio('q4'))              errs.push('Q4 困っている対象');
     if (!getRadio('q5'))              errs.push('Q5 発生頻度');
     if (getChecks('q6').length === 0) errs.push('Q6 困りごと・影響');
-    if (!getRadio('q7b'))             errs.push('Q7-b 発生タイミング（いつ）');
+    // Q7 は任意（自由記述）なので必須チェックはしない
     return errs;
   },
   // step2 今の対応（必須なし）
@@ -250,7 +250,7 @@ function onIdeaInput() {
 }
 
 // ============================================================
-//  プログレスバー（15項目）
+//  プログレスバー（14項目）
 // ============================================================
 function updateProgress() {
   if (!startTime) startTime = new Date();
@@ -258,13 +258,13 @@ function updateProgress() {
     getVal('q1'), getVal('q2'), getVal('q2b'),
     getRadio('q3'), getRadio('q4'),
     getRadio('q5'), getChecks('q6').length > 0 ? '1' : '',
-    getVal('q7'), getRadio('q7b'),
+    getVal('q7'),
     getVal('q8'), getChecks('q9').length > 0 ? '1' : '',
     getVal('q10'), getRadio('q11'),
     getChecks('q12').length > 0 ? '1' : '', getVal('q13')
   ];
   const filled = items.filter(v => v !== '').length;
-  const total  = 15;
+  const total  = 14;
   document.getElementById('progress-label').textContent = `${filled} / ${total} 項目入力済み`;
   document.getElementById('progressFill').style.width = `${Math.round(filled / total * 100)}%`;
 }
@@ -297,8 +297,7 @@ function buildText() {
     `困っている対象: ${getRadio('q4')}`,
     `発生頻度: ${getRadio('q5')}`,
     `困りごと・影響: ${q6v.join(' / ')}`,
-    `主なシーン: ${getVal('q7')}`,
-    `発生タイミング（いつ）: ${getRadio('q7b') || ''}`,
+    `主なシーン・タイミング: ${getVal('q7')}`,
     '',
     '--- C（現在の対応・比較） ---',
     `現在の対応・工夫: ${getVal('q8')}`,
@@ -396,9 +395,7 @@ function buildCsvText() {
     addRow('q6_problem_1', '');
   }
 
-  addRow('q7_scene',       getVal('q7'));
-  addRow('q7b_when',       getRadio('q7b'));
-  addRow('q7b_when_other', getVal('q7b-other-text'));
+  addRow('q7_scene', getVal('q7'));
 
   addRow('q8_current_workaround', getVal('q8'));
 
@@ -474,7 +471,6 @@ function showPreview() {
     const picoText =
       `<b>P</b>: ${who}（頻度: ${freq}）<br>` +
       `<b>Scene</b>: ${getVal('q7')}<br>` +
-      `<b>When</b>: ${getRadio('q7b') || '（未選択）'}<br>` +
       `<b>I</b>: ${idea.slice(0,120)}${idea.length>120?'...':''}<br>` +
       `<b>C</b>: ${getVal('q8') || '（明確な比較対象なし）'}<br>` +
       `<b>O</b>: ${outcomes.join(' / ')}`;
@@ -633,7 +629,6 @@ function getItExperienceChecks() {
     .map(e => e.value);
 }
 
-// ITレベル判定
 function getItLevelLabel() {
   const vals = getItExperienceChecks();
   if (vals.length === 0) return null;
@@ -695,7 +690,6 @@ function startCloseCountdown(seconds) {
   }, 1000);
 }
 
-// アンケート送信完了後に呼ぶことを想定
 function submitAll() {
   const missing = [];
   ['sq1','sq2','sq4','sq5','sq6_scale'].forEach(name => {
