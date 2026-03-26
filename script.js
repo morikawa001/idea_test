@@ -1,17 +1,11 @@
 // ============================================================
 //  設定
 // ============================================================
-// const MAIL_TO = 'ns.morizo@gmail.com';  // ← これは使わない（残してもOK）
-
-// Q11のカテゴリーごとの送信先メールアドレス
-const MAIL_TO_MAP = {
-  '医療機器・器具の新規開発や改良'            : 'ns.morizo@gmail.com',
-  'アプリ・RPAによる業務自動化・電子化'        : 'ns.morizo@outlook.jp',
-  '既存製品の新しい使い方（転用・適応外使用など）': 'ns.morizo@gmail.com',
-  '運用ルールやマニュアルの変更'                : 'ns.morizo@outlook.jp'
-};
-
+const MAIL_TO = 'ns.morizo@gmail.com';
 let startTime = null;
+
+const NAME_NG_WORDS = ['匿名', '無記名', 'anonymous', 'anon', '名無し', 'なし', 'ない', 'none', 'no name'];
+
 // ============================================================
 //  UI要素の表示・非表示ヘルパー
 // ============================================================
@@ -73,10 +67,9 @@ const STEP_REQUIRED = [
     const nameVal = getVal('q2');
     if (!nameVal) {
       errs.push('Q2 氏名');
-    } 
-    //else if (isNGName(nameVal)) {
-      //errs.push('Q2 氏名（匿名での受付はできません。お名前をご記入ください）');
-   // }
+    } else if (isNGName(nameVal)) {
+      errs.push('Q2 氏名（匿名での受付はできません。お名前をご記入ください）');
+    }
     const emailVal = getVal('q2b');
     if (!emailVal) {
       errs.push('Q2-b 返信用メールアドレス');
@@ -418,28 +411,16 @@ function buildCsvText() {
 }
 
 // ============================================================
-//  メール送信（ユーザーのメーラー起動）
+//  メール送信
 // ============================================================
 function sendMail() {
-  const body = buildText();
-
-  // Q11の選択値を取得
-  const q11val = getRadio('q11');  // 例）"医療機器・器具の新規開発や改良"
-
-  // デフォルト宛先（Q11が未選択 or 対応表にない場合のフォールバック）
-  let to = 'default-team@example.jp';
-
-  if (q11val && MAIL_TO_MAP[q11val]) {
-    to = MAIL_TO_MAP[q11val];
-  }
-
-  const subject = '【MITアイデア】現場からの提案';
-
-  const mailto = `mailto:${encodeURIComponent(to)}`
-    + `?subject=${encodeURIComponent(subject)}`
-    + `&body=${encodeURIComponent(body)}`;
-
-  window.location.href = mailto;
+  const humanText = buildText();
+  const csvText   = buildCsvText();
+  const fullBody  = humanText + '\n\n\n--- CSV形式（システム取込用） ---\n' + csvText;
+  const subject = encodeURIComponent(`【アイデア提案】${getVal('q2')}（${getVal('q1')}）`);
+  const body    = encodeURIComponent(fullBody);
+  formCompleted = true;
+  window.location.href = `mailto:${MAIL_TO}?subject=${subject}&body=${body}`;
 }
 
 function submitAll() {
