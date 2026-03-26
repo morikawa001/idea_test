@@ -6,9 +6,9 @@
 // Q11のカテゴリーごとの送信先メールアドレス
 const MAIL_TO_MAP = {
   '医療機器・器具の新規開発や改良'            : 'ns.morizo@gmail.com',
-  'アプリ・RPAによる業務自動化・電子化'        : 'ns.morizo@gmail.com',
+  'アプリ・RPAによる業務自動化・電子化'        : 'ns.morizo@outlook.jp',
   '既存製品の新しい使い方（転用・適応外使用など）': 'ns.morizo@gmail.com',
-  '運用ルールやマニュアルの変更'                : 'ns.morizo@gmail.com'
+  '運用ルールやマニュアルの変更'                : 'ns.morizo@outlook.jp'
 };
 
 let startTime = null;
