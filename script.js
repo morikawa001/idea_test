@@ -1,7 +1,16 @@
 // ============================================================
 //  設定
 // ============================================================
-const MAIL_TO = 'ns.morizo@gmail.com';
+// const MAIL_TO = 'ns.morizo@gmail.com';  // ← これは使わない
+
+// Q11のカテゴリーごとの送信先メールアドレス
+const MAIL_TO_MAP = {
+  '医療機器・器具の新規開発や改良'            : 'ns.morizo@gmail.com',
+  'アプリ・RPAによる業務自動化・電子化'        : 'ns.morizo@outlook.jp',
+  '既存製品の新しい使い方（転用・適応外使用など）': 'ns.morizo@gmail.com',
+  '運用ルールやマニュアルの変更'                : 'ns.morizo@outlook.jp'
+};
+
 let startTime = null;
 
 const NAME_NG_WORDS = ['匿名', '無記名', 'anonymous', 'anon', '名無し', 'なし', 'ない', 'none', 'no name'];
@@ -417,11 +426,23 @@ function sendMail() {
   const humanText = buildText();
   const csvText   = buildCsvText();
   const fullBody  = humanText + '\n\n\n--- CSV形式（システム取込用） ---\n' + csvText;
-  const subject = encodeURIComponent(`【アイデア提案】${getVal('q2')}（${getVal('q1')}）`);
-  const body    = encodeURIComponent(fullBody);
+
+  // Q11の選択値を取得
+  const q11val = getRadio('q11');
+
+  // デフォルト宛先
+  let to = 'ns.morizo@gmail.com';
+  if (q11val && MAIL_TO_MAP[q11val]) {
+    to = MAIL_TO_MAP[q11val];
+  }
+
+  const subject = `【アイデア提案】${getVal('q2')}（${getVal('q1')}）`;
+
   formCompleted = true;
-  window.location.href = `mailto:${MAIL_TO}?subject=${subject}&body=${body}`;
+  window.location.href =
+    `mailto:${encodeURIComponent(to)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(fullBody)}`;
 }
+
 
 function submitAll() {
   const missing = [];
