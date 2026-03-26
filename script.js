@@ -73,9 +73,10 @@ const STEP_REQUIRED = [
     const nameVal = getVal('q2');
     if (!nameVal) {
       errs.push('Q2 氏名');
-    } else if (isNGName(nameVal)) {
-      errs.push('Q2 氏名（匿名での受付はできません。お名前をご記入ください）');
-    }
+    } 
+    //else if (isNGName(nameVal)) {
+      //errs.push('Q2 氏名（匿名での受付はできません。お名前をご記入ください）');
+   // }
     const emailVal = getVal('q2b');
     if (!emailVal) {
       errs.push('Q2-b 返信用メールアドレス');
