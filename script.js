@@ -1,13 +1,15 @@
 // ============================================================
-// ① これを削除
+//  設定
 // ============================================================
-// const MAIL_TO = 'ns.morizo@gmail.com';
-// const MAIL_TO_MAP = { ... };  ← 全部削除
+// const MAIL_TO = 'ns.morizo@gmail.com';  // ← これは使わない
 
-// ============================================================
-// ② GASのWebアプリURLだけ書く（アドレスは書かない）
-// ============================================================
-const GAS_MAIL_URL = 'https://script.google.com/macros/s/AKfycbw_hYhs5Rmh52G8GoDCFi1BxMNaP-ZeCx3okMvFxbcswbSeq3i85Z9gPYSugIOlHLYlog/exec';
+// Q11のカテゴリーごとの送信先メールアドレス
+const MAIL_TO_MAP = {
+  '医療機器・器具の新規開発や改良'            : 'ns.morizo@gmail.com',
+  'アプリ・RPAによる業務自動化・電子化'        : 'ns.morizo@outlook.jp',
+  '既存製品の新しい使い方（転用・適応外使用など）': 'ns.morizo@gmail.com',
+  '運用ルールやマニュアルの変更'                : 'ns.morizo@outlook.jp'
+};
 
 let startTime = null;
 
@@ -418,37 +420,29 @@ function buildCsvText() {
 }
 
 // ============================================================
-// ③ sendMail() を丸ごと置き換え
+//  メール送信
 // ============================================================
 function sendMail() {
   const humanText = buildText();
   const csvText   = buildCsvText();
-  const q11val    = getRadio('q11');
-  const subject   = `${getVal('q2')}【${getVal('q1')}】のアイデア提案`;
+  const fullBody  = humanText + '\n\n\n--- CSV形式（システム取込用） ---\n' + csvText;
 
-  const payload = {
-    type:     'sendmail',
-    q11:      q11val,
-    subject:  subject,
-    body:     humanText,
-    csv:      csvText
-  };
+  // Q11の選択値を取得
+  const q11val = getRadio('q11');
 
-  // ★変更①：fetch の前に return を追加
-  return fetch(GAS_MAIL_URL, {
-    method: 'POST',
-    body:   JSON.stringify(payload)
-  })
-  .then(r => r.text())
-  .then(res => {
-    console.log('GAS response:', res);
-    // ★変更②：コメントを削除し、formCompleted をここに移動
-    formCompleted = true;
-  })
-  .catch(err => console.error('Mail send error:', err));
+  // デフォルト宛先
+  let to = 'ns.morizo@gmail.com';
+  if (q11val && MAIL_TO_MAP[q11val]) {
+    to = MAIL_TO_MAP[q11val];
+  }
 
-  // ★変更③：ここにあった formCompleted = true; を削除
+  const subject = `【アイデア提案】${getVal('q2')}（${getVal('q1')}）`;
+
+  formCompleted = true;
+  window.location.href =
+    `mailto:${encodeURIComponent(to)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(fullBody)}`;
 }
+
 
 function submitAll() {
   const missing = [];
@@ -476,11 +470,10 @@ function submitAll() {
   }
   document.getElementById('surveyModal').classList.remove('active');
   sendLog('survey_completed', 6);
-  // 変更後：GASの返答を待ってからモーダル表示
-sendMail().then(() => {
+  sendMail();
   showThankModal();
   startCloseCountdown(30);
-});
+}
 
 // ============================================================
 //  自動終了カウントダウン
