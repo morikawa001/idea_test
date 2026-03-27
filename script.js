@@ -434,18 +434,20 @@ function sendMail() {
     csv:      csvText
   };
 
-  fetch(GAS_MAIL_URL, {
+  // ★変更①：fetch の前に return を追加
+  return fetch(GAS_MAIL_URL, {
     method: 'POST',
     body:   JSON.stringify(payload)
   })
   .then(r => r.text())
   .then(res => {
     console.log('GAS response:', res);
-    // 既存のthankModal表示はそのまま続ける
+    // ★変更②：コメントを削除し、formCompleted をここに移動
+    formCompleted = true;
   })
   .catch(err => console.error('Mail send error:', err));
 
-  formCompleted = true;
+  // ★変更③：ここにあった formCompleted = true; を削除
 }
 
 function submitAll() {
@@ -474,10 +476,11 @@ function submitAll() {
   }
   document.getElementById('surveyModal').classList.remove('active');
   sendLog('survey_completed', 6);
-  sendMail();
+  // 変更後：GASの返答を待ってからモーダル表示
+sendMail().then(() => {
   showThankModal();
   startCloseCountdown(30);
-}
+});
 
 // ============================================================
 //  自動終了カウントダウン
