@@ -1,15 +1,13 @@
 // ============================================================
-//  設定
+// ① これを削除
 // ============================================================
-// const MAIL_TO = 'ns.morizo@gmail.com';  // ← これは使わない
+// const MAIL_TO = 'ns.morizo@gmail.com';
+// const MAIL_TO_MAP = { ... };  ← 全部削除
 
-// Q11のカテゴリーごとの送信先メールアドレス
-const MAIL_TO_MAP = {
-  '医療機器・器具の新規開発や改良'            : 'ns.morizo@gmail.com',
-  'アプリ・RPAによる業務自動化・電子化'        : 'ns.morizo@outlook.jp',
-  '既存製品の新しい使い方（転用・適応外使用など）': 'ns.morizo@gmail.com',
-  '運用ルールやマニュアルの変更'                : 'ns.morizo@outlook.jp'
-};
+// ============================================================
+// ② GASのWebアプリURLだけ書く（アドレスは書かない）
+// ============================================================
+const GAS_MAIL_URL = 'https://script.google.com/macros/s/AKfycbw_hYhs5Rmh52G8GoDCFi1BxMNaP-ZeCx3okMvFxbcswbSeq3i85Z9gPYSugIOlHLYlog/exec';
 
 let startTime = null;
 
@@ -420,29 +418,35 @@ function buildCsvText() {
 }
 
 // ============================================================
-//  メール送信
+// ③ sendMail() を丸ごと置き換え
 // ============================================================
 function sendMail() {
   const humanText = buildText();
   const csvText   = buildCsvText();
-  const fullBody  = humanText + '\n\n\n--- CSV形式（システム取込用） ---\n' + csvText;
+  const q11val    = getRadio('q11');
+  const subject   = `${getVal('q2')}【${getVal('q1')}】のアイデア提案`;
 
-  // Q11の選択値を取得
-  const q11val = getRadio('q11');
+  const payload = {
+    type:     'sendmail',
+    q11:      q11val,
+    subject:  subject,
+    body:     humanText,
+    csv:      csvText
+  };
 
-  // デフォルト宛先
-  let to = 'ns.morizo@gmail.com';
-  if (q11val && MAIL_TO_MAP[q11val]) {
-    to = MAIL_TO_MAP[q11val];
-  }
-
-  const subject = `【アイデア提案】${getVal('q2')}（${getVal('q1')}）`;
+  fetch(GAS_MAIL_URL, {
+    method: 'POST',
+    body:   JSON.stringify(payload)
+  })
+  .then(r => r.text())
+  .then(res => {
+    console.log('GAS response:', res);
+    // 既存のthankModal表示はそのまま続ける
+  })
+  .catch(err => console.error('Mail send error:', err));
 
   formCompleted = true;
-  window.location.href =
-    `mailto:${encodeURIComponent(to)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(fullBody)}`;
 }
-
 
 function submitAll() {
   const missing = [];
