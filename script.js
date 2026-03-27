@@ -7,7 +7,7 @@
 // ============================================================
 // ② GASのWebアプリURLだけ書く（アドレスは書かない）
 // ============================================================
-const GAS_MAIL_URL = 'https://script.google.com/macros/s/AKfycbw_hYhs5Rmh52G8GoDCFi1BxMNaP-ZeCx3okMvFxbcswbSeq3i85Z9gPYSugIOlHLYlog/exec';
+const GAS_MAIL_URL = 'https://script.google.com/macros/s/AKfycbwFnGzrkXw2EEkfhnmYzZBSmIEhVsCr6oTQMGIqdaWKTfZWUDo1fClPMvqx_RHMukLoLA/exec';
 let startTime = null;
 
 const NAME_NG_WORDS = ['匿名', '無記名', 'anonymous', 'anon', '名無し', 'なし', 'ない', 'none', 'no name'];
@@ -426,26 +426,40 @@ function sendMail() {
   const subject   = `${getVal('q2')}【${getVal('q1')}】のアイデア提案`;
 
   const payload = {
-    type:     'sendmail',
-    q11:      q11val,
-    subject:  subject,
-    body:     humanText,
-    csv:      csvText
+    type:    'sendmail',  // ★そのまま使う
+    q11:     q11val,
+    // 以下は今はGASに渡さなくてもよいが、
+    // 将来ログ用途などに拡張したくなった時のために残してもOK
+    subject: subject,
+    body:    humanText,
+    csv:     csvText
   };
 
-  // ★ return を追加
+  // ① まずGASに宛先だけ問い合わせ
   return fetch(GAS_MAIL_URL, {
     method: 'POST',
     body:   JSON.stringify(payload)
   })
-  .then(r => r.text())
+  .then(r => r.json())
   .then(res => {
-    console.log('GAS response:', res);
-    formCompleted = true;  // ★ ここに移動
-  })
-  .catch(err => console.error('Mail send error:', err));
+    const to = res.to || '';
 
-  // ★ 末尾の formCompleted = true; は削除
+    // ② mailto URL を組み立てて、ユーザーのメーラーを起動
+    const fullBody = humanText + '\n\n--- CSV ---\n' + csvText;
+
+    const mailtoUrl =
+      'mailto:' + encodeURIComponent(to) +
+      '?subject=' + encodeURIComponent(subject) +
+      '&body='    + encodeURIComponent(fullBody);
+
+    window.location.href = mailtoUrl;
+
+    formCompleted = true;
+  })
+  .catch(err => {
+    console.error('Mail resolve error:', err);
+    alert('メール宛先の取得に失敗しました。時間をおいてお試しください。');
+  });
 }
 
 function submitAll() {
